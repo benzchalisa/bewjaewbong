@@ -1,0 +1,230 @@
+/* ============================================================
+   app/globals.css — CSS ส่วนกลางของทั้งเว็บ (ถูก import ใน app/layout.js)
+   ไล่จากบนลงล่าง: ตัวแปรสี -> Sidebar -> Topbar -> เนื้อหา -> ตาราง -> Modal -> Responsive
+   ============================================================ */
+
+/* โหลดฟอนต์จาก Google Fonts: DM Sans (อังกฤษ) และ Noto Sans Thai (ไทย) — ต้องต่ออินเทอร์เน็ต */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+
+
+/* ===== ตัวแปรสี (CSS Variables) — เรียกใช้ด้วย var(--ชื่อ) ===== */
+:root { --ink:#222237; --muted:#85859a; --line:#ececf3; --purple:#6757df; --bg:#f8f8fc; }
+
+/* ===== Reset / พื้นฐานของทั้งหน้า ===== */
+/* box-sizing: border-box = ความกว้างรวม padding/border ไว้แล้ว คำนวณขนาดง่ายขึ้น */
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:'DM Sans','Noto Sans Thai',sans-serif; font-size:14px; }
+button,
+input,
+select { font:inherit; }
+button { cursor:pointer; transition:all .15s ease; }
+button:disabled { opacity:.6; cursor:wait; }
+.app-shell { min-height:100vh; display:flex; }
+
+/* ===== โครงหน้า (Layout): Sidebar ด้านซ้าย ===== */
+.sidebar { width:244px; background:#fff; border-right:1px solid var(--line); padding:29px 17px 20px; display:flex; flex-direction:column; flex-shrink:0; }
+
+/* โลโก้ Bookspace */
+.brand { display:flex; align-items:center; gap:11px; padding:0 9px; font-size:20px; font-weight:700; letter-spacing:-.7px; }
+.brand-mark { display:grid; place-items:center; width:34px; height:34px; background:#6859e4; color:white; border-radius:11px; font-family:Georgia,serif; font-size:22px; }
+.brand-dot { color:#6a5be7; }
+
+/* หัวข้อเล็กและเมนูใน Sidebar */
+.side-label { font-size:10px; font-weight:700; letter-spacing:1.4px; color:#a2a2b3; margin:45px 10px 13px; }
+.nav-item { display:flex; align-items:center; gap:12px; padding:12px 12px; border-radius:9px; color:#77778d; font-weight:600; }
+.nav-item.active { color:#6254d8; background:#f0efff; }
+.nav-icon { font-size:18px; }
+.nav-count { margin-left:auto; background:#e1ddff; color:#6254d8; border-radius:6px; padding:3px 7px; font-size:11px; }
+
+/* กล่องผู้ใช้ท้าย Sidebar + รูปโปรไฟล์วงกลม */
+.side-bottom { margin-top:auto; border-top:1px solid var(--line); padding:19px 3px 0; display:flex; align-items:center; gap:10px; }
+.avatar,
+.top-avatar { display:grid; place-items:center; background:#f0efff; color:#6656df; border-radius:50%; width:36px; height:36px; font-size:11px; font-weight:700; }
+.side-bottom strong { display:block; font-size:12px; }
+.side-bottom small { display:block; color:#9999aa; font-size:11px; margin-top:4px; }
+
+/* ===== พื้นที่หลัก + แถบด้านบน (Topbar) ===== */
+.main-panel { flex:1; min-width:0; }
+.topbar { height:76px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:0 46px; }
+.breadcrumb { color:#9999aa; font-size:12px; }
+.breadcrumb span { padding:0 10px; color:#c4c4cf; }
+.breadcrumb strong { color:#35354c; font-weight:600; }
+.top-right { display:flex; align-items:center; gap:9px; color:#7c7c91; font-size:12px; }
+.status-dot { display:inline-block; width:7px; height:7px; background:#35bf8b; border-radius:50%; }
+.top-avatar { width:30px; height:30px; margin-left:12px; background:#25243e; color:white; }
+
+/* ===== เนื้อหาหลัก + หัวข้อหน้า ===== */
+.content { max-width:1320px; margin:0 auto; padding:38px 46px 22px; }
+.heading-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.eyebrow { color:#8c83e9; font-weight:700; font-size:10px; letter-spacing:1.6px; margin-bottom:9px; }
+h1 { font-size:30px; letter-spacing:-1px; margin:0; font-weight:700; }
+.title-emoji { font-size:20px; color:#8173e9; vertical-align:middle; margin-left:5px; }
+.subtitle { margin:9px 0 0; color:#88889d; font-size:13px; }
+
+/* ===== ปุ่มหลักสีม่วง ===== */
+.primary-btn { border:0; border-radius:9px; background:#6757df; color:white; font-weight:600; padding:12px 17px; box-shadow:0 5px 12px #6757df25; }
+.primary-btn:hover { background:#5646cf; transform:translateY(-1px); }
+.primary-btn span { font-size:17px; margin-right:5px; }
+
+/* ===== การ์ดสถิติ 3 ใบ (grid 3 คอลัมน์) ===== */
+.stats-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:17px; margin-bottom:27px; }
+.stat-card { background:#fff; border:1px solid #eeeef5; border-radius:13px; padding:19px 21px; box-shadow:0 3px 10px #29294c04; }
+.stat-top { display:flex; justify-content:space-between; align-items:center; color:#77778e; font-size:12px; font-weight:500; }
+.stat-icon { width:31px; height:31px; display:grid; place-items:center; border-radius:9px; font-size:15px; }
+.purple { background:#f0edff; color:#6c5ae5; }
+.green { background:#e6f8f0; color:#25a978; }
+.orange { background:#fff2e5; color:#e79a48; }
+.stat-number { font-size:29px; font-weight:700; letter-spacing:-1px; margin:12px 0 2px; }
+.stat-foot { font-size:11px; color:#a0a0b1; }
+.green-text { color:#2dbd88; }
+
+/* ===== การ์ดรายการหนังสือ + แถบเครื่องมือค้นหา ===== */
+.catalog-card { background:#fff; border:1px solid #ededf4; border-radius:14px; overflow:hidden; box-shadow:0 3px 12px #29294c04; }
+.catalog-header { padding:23px 24px 19px; display:flex; align-items:center; justify-content:space-between; }
+.catalog-header h2 { font-size:16px; margin:0; font-weight:700; }
+.catalog-header p { font-size:12px; color:#9696a9; margin:6px 0 0; }
+.results-pill { background:#f2f1ff; color:#6a5bdd; border-radius:7px; padding:6px 10px; font-size:11px; font-weight:600; }
+.toolbar { display:flex; gap:10px; padding:0 24px 19px; }
+.search-box { height:39px; border:1px solid #e8e8f0; border-radius:8px; display:flex; align-items:center; gap:9px; padding:0 12px; flex:1; max-width:440px; color:#a2a2b5; }
+.search-box span { font-size:21px; }
+.search-box input { border:0; outline:0; width:100%; color:#35354c; background:transparent; font-size:12px; }
+.search-box input::placeholder { color:#aaaabc; }
+.toolbar select,
+.form-row select { border:1px solid #e8e8f0; border-radius:8px; background:white; color:#77778d; padding:0 12px; outline:0; font-size:12px; }
+.refresh-btn { border:1px solid #e8e8f0; border-radius:8px; background:white; color:#77778d; width:40px; font-size:20px; }
+
+/* ===== ตารางหนังสือ ===== */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; text-align:left; white-space:nowrap; }
+thead { background:#fafafd; }
+th { font-size:10px; text-transform:uppercase; letter-spacing:.7px; color:#a0a0b1; font-weight:700; padding:13px 18px; }
+th:first-child,
+td:first-child { padding-left:24px; }
+th:last-child,
+td:last-child { padding-right:24px; }
+td { border-top:1px solid #f0f0f5; padding:14px 18px; color:#77778d; font-size:12px; }
+.book-cell { display:flex; align-items:center; gap:12px; min-width:190px; }
+.book-cell strong { display:block; color:#33334a; font-size:12px; font-weight:600; max-width:220px; overflow:hidden; text-overflow:ellipsis; }
+.book-cell small { display:block; color:#aaaabb; font-size:10px; margin-top:5px; }
+
+/* ปกหนังสือจำลอง (ไล่สี) — cover-1..4 คือสีอื่นที่วนใช้ตามลำดับแถว */
+.book-cover { width:36px; height:44px; border-radius:5px; display:grid; place-items:center; font-family:Georgia,serif; font-size:18px; font-weight:700; color:#fff; background:linear-gradient(145deg,#7c6ce5,#4236a0); box-shadow:2px 3px 5px #39308020; }
+.cover-1 { background:linear-gradient(145deg,#e8a46e,#ad5b37); }
+.cover-2 { background:linear-gradient(145deg,#63b6a4,#26756d); }
+.cover-3 { background:linear-gradient(145deg,#d78caa,#9b4b76); }
+.cover-4 { background:linear-gradient(145deg,#6b9ed2,#315b94); }
+.id-text { font-size:11px; color:#aaaabc; }
+
+/* ป้ายสถานะ: พร้อมให้ยืม (เขียว) / ถูกยืมอยู่ (ส้ม) */
+.status-badge { display:inline-flex; align-items:center; gap:6px; border-radius:6px; padding:6px 9px; font-size:10px; font-weight:600; }
+.status-badge span { width:5px; height:5px; border-radius:50%; }
+.status-badge.available { background:#e8f8f0; color:#22976c; }
+.status-badge.available span { background:#2bb782; }
+.status-badge.unavailable { background:#fff1e8; color:#c57a3d; }
+.status-badge.unavailable span { background:#e99a50; }
+
+/* ปุ่มแก้ไข / ลบ ท้ายแถว */
+.actions-head { text-align:right; }
+.row-actions { display:flex; justify-content:flex-end; gap:7px; }
+.icon-btn { width:30px; height:30px; border-radius:7px; border:1px solid #ececf3; background:#fff; color:#85859a; font-size:14px; }
+.icon-btn.edit:hover { color:#6656df; border-color:#d9d4ff; background:#f7f6ff; }
+.icon-btn.delete:hover { color:#d34c60; border-color:#f6d5da; background:#fff7f8; }
+
+/* ท้ายตาราง */
+.table-footer { border-top:1px solid #f0f0f5; padding:14px 24px; display:flex; justify-content:space-between; color:#a0a0b1; font-size:10px; }
+.api-label { display:flex; align-items:center; gap:7px; color:#7d7d92; }
+
+/* ===== สถานะว่าง / กำลังโหลด / แถบ error ===== */
+.empty-state { min-height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#9999ac; padding:25px; }
+.empty-icon { width:46px; height:46px; display:grid; place-items:center; background:#f1efff; color:#6a5bdd; border-radius:14px; font-size:23px; }
+.empty-state h3 { color:#45455d; font-size:14px; margin:15px 0 3px; }
+.empty-state p { font-size:12px; margin:4px 0 15px; }
+.loader { width:25px; height:25px; border:3px solid #e9e6ff; border-top-color:#6a5bdd; border-radius:50%; animation:spin .8s linear infinite; }
+
+/* แอนิเมชันหมุนของ loader */
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* แถบแจ้ง error สีแดง */
+.error-banner { margin:0 24px 16px; padding:11px 12px; border-radius:8px; background:#fff0f1; color:#b6404e; display:flex; gap:10px; align-items:center; font-size:12px; }
+.error-banner>span { font-weight:700; }
+.error-banner div { flex:1; }
+.error-banner button { border:0; background:none; color:inherit; font-size:18px; }
+
+/* ===== Footer ===== */
+footer { color:#aaaabb; font-size:10px; padding:23px 2px; }
+footer>span:first-of-type { color:#8778e9; margin-left:4px; }
+.footer-right { float:right; letter-spacing:1px; font-size:9px; }
+
+/* ===== Modal (หน้าต่างฟอร์ม): พื้นหลังมืดเต็มจอ + กล่องฟอร์ม ===== */
+.modal-backdrop { position:fixed; inset:0; background:#1e1b3970; z-index:10; display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto; }
+.modal { width:100%; max-width:540px; background:white; border-radius:16px; padding:27px; box-shadow:0 25px 80px #16133330; max-height:95vh; overflow:auto; }
+
+/* หัวของ modal + ปุ่มปิด */
+.modal-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:23px; }
+.modal-head h2 { font-size:20px; margin:0; letter-spacing:-.4px; }
+.modal-head p { font-size:12px; color:#9292a6; margin:7px 0 0; }
+.close-btn { border:0; background:#f5f5fa; border-radius:8px; width:32px; height:32px; color:#77778d; font-size:22px; }
+
+/* ช่องกรอกข้อมูลในฟอร์ม */
+.modal form>label { display:block; margin-bottom:16px; font-size:12px; font-weight:600; color:#45455c; }
+.modal form label>span { color:#d45d6d; }
+.modal input:not([type=file]),
+.modal form select { display:block; width:100%; height:42px; border:1px solid #e5e5ef; border-radius:8px; margin-top:7px; padding:0 12px; outline:0; color:#37374d; background:#fff; font-size:12px; }
+.modal input:focus,
+.modal select:focus { border-color:#9d93f3; box-shadow:0 0 0 3px #6757df12; }
+
+/* แถวที่มี 2 ช่องเคียงกัน */
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:13px; margin-bottom:17px; }
+.form-row label { font-size:12px; font-weight:600; color:#45455c; }
+
+/* ===== กล่องอัปโหลดภาพปก ===== */
+.upload-label { font-size:12px; font-weight:600; color:#45455c; margin-bottom:8px; }
+.optional { color:#aaaabb!important; font-weight:400; }
+.upload-box { min-height:122px; border:1px dashed #d8d6e9; border-radius:10px; background:#fbfaff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; color:#76758e; text-align:center; padding:13px; }
+.upload-box:hover { border-color:#8a7cf0; background:#f8f6ff; }
+.upload-icon { display:grid; place-items:center; border-radius:9px; width:30px; height:30px; background:#eeeaff; color:#6b5be2; font-size:20px; }
+.upload-box strong { font-size:11px; }
+.upload-box small { font-size:10px; color:#aaaabb; }
+.cover-preview { max-width:100%; max-height:150px; object-fit:contain; border-radius:6px; }
+.upload-note { font-size:10px; color:#a0a0b1; margin:8px 0 0; }
+
+/* ปุ่มล่างสุดของฟอร์ม (ยกเลิก / บันทึก) */
+.modal-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:24px; }
+.secondary-btn { background:white; border:1px solid #e5e5ef; color:#77778d; border-radius:8px; padding:11px 16px; font-weight:600; }
+.modal-actions .primary-btn { padding:11px 17px; font-size:12px; }
+
+/* ===== Responsive: แท็บเล็ต (จอกว้าง ≤ 1000px) ย่อ Sidebar และระยะห่าง ===== */
+@media(max-width:1000px) {
+  .sidebar { width:205px; }
+  .content { padding:30px 25px; }
+  .topbar { padding:0 25px; }
+  .stats-grid { gap:10px; }
+  .stat-card { padding:16px; }
+}
+
+/* ===== Responsive: มือถือ (จอกว้าง ≤ 760px) ซ่อน Sidebar, การ์ดสถิติเรียงแนวตั้ง, ฟอร์มเป็นคอลัมน์เดียว ===== */
+@media(max-width:760px) {
+  .sidebar { display:none; }
+  .topbar { height:60px; padding:0 18px; }
+  .content { padding:25px 15px; }
+  .heading-row { align-items:flex-start; gap:14px; }
+  .heading-row h1 { font-size:24px; }
+  .heading-row .primary-btn { padding:10px 11px; font-size:11px; white-space:nowrap; }
+  .stats-grid { grid-template-columns:1fr; gap:10px; }
+  .stat-card { padding:14px 17px; }
+  .stat-number { font-size:24px; margin:7px 0 1px; }
+  .catalog-header { padding:18px 15px; }
+  .toolbar { padding:0 15px 15px; flex-wrap:wrap; }
+  .search-box { max-width:none; flex-basis:100%; }
+  .toolbar select { height:37px; flex:1; }
+  .table-footer { padding:13px 15px; }
+  th:first-child,
+  td:first-child { padding-left:15px; }
+  th:last-child,
+  td:last-child { padding-right:15px; }
+  .top-right { font-size:0; }
+  .top-avatar { font-size:11px; }
+  .form-row { grid-template-columns:1fr; }
+  .modal { padding:20px; }
+  .footer-right { display:none; }
+}

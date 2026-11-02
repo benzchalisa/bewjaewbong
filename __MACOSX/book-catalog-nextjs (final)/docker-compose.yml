@@ -1,0 +1,45 @@
+# ============================================================
+# docker-compose.yml — สั่งรันคอนเทนเนอร์ด้วยคำสั่งเดียว (แทนการพิมพ์ docker run ยาว ๆ)
+#
+# วิธีใช้:
+#   docker compose up --build        # build แล้วรัน (เห็น log ในหน้าจอ)
+#   docker compose up -d --build     # รันเบื้องหลัง
+#   docker compose logs -f           # ดู log
+#   docker compose down              # หยุดและลบคอนเทนเนอร์
+#
+# เปิดเว็บที่ http://localhost:3001
+# ============================================================
+
+services:
+  # ชื่อ service (ตั้งเองได้) — เรามี service เดียวคือเว็บ Next.js
+  web:
+    # build จาก Dockerfile ในโฟลเดอร์นี้ (. = โฟลเดอร์ปัจจุบัน)
+    build: .
+    # ชื่อคอนเทนเนอร์ที่จะเห็นใน docker ps
+    container_name: book-catalog-web
+
+    ports:
+      # รูปแบบ "พอร์ตเครื่องเรา:พอร์ตในคอนเทนเนอร์"
+      # ใช้ 3001 ฝั่งเครื่องเรา เพราะพอร์ต 3000 ต้องเว้นไว้ให้ Backend Express
+      - "3001:3000"
+
+    environment:
+      # ที่อยู่ Backend: ถ้าตั้งตัวแปร BACKEND_URL ไว้ในเครื่องจะใช้ค่านั้น
+      # ถ้าไม่ได้ตั้ง จะใช้ค่าหลังเครื่องหมาย :- (Express ที่รันบนเครื่องหลักพอร์ต 3000)
+      BACKEND_URL: ${BACKEND_URL:-http://host.docker.internal:3000}
+
+    extra_hosts:
+      # ทำให้ชื่อ host.docker.internal ใช้ได้บน Linux ด้วย
+      # (Docker Desktop บน Windows/macOS มีให้อยู่แล้ว)
+      - "host.docker.internal:host-gateway"
+
+    volumes:
+      # เก็บรูปที่อัปโหลดไว้ใน volume ชื่อ "uploads" รูปจะไม่หายเมื่อลบคอนเทนเนอร์
+      - uploads:/app/public/uploads
+
+    # ถ้าคอนเทนเนอร์ล้ม หรือรีสตาร์ตเครื่อง ให้เปิดใหม่เอง (ยกเว้นเราสั่งหยุดเอง)
+    restart: unless-stopped
+
+# ประกาศ volume ที่ใช้ข้างบน (Docker จัดการที่เก็บข้อมูลให้)
+volumes:
+  uploads:
