@@ -1,0 +1,23 @@
+{
+  "name": "book-review-api",
+  "version": "2.0.0",
+  "description": "Book Catalog + Review API (Express 5 + Prisma + SQLite)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "db:push": "prisma db push",
+    "studio": "prisma studio"
+  },
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "multer": "^2.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.10.0"
+  }
+}
