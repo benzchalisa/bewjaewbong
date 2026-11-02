@@ -1,0 +1,49 @@
+services:
+  api:
+    build:
+      context: ./book-review-backend/book-review-api
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: file:/app/data/books.db
+      UPLOAD_DIR: /app/uploads
+      API_PUBLIC_URL: ${API_PUBLIC_URL:-http://localhost:3000}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3001}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    volumes:
+      - book-review-data:/app/data
+      - book-review-uploads:/app/uploads
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./book-review-frontend/book-review-frontend (Unzipped Files)
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "${FRONTEND_PORT:-3001}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  book-review-data:
+  book-review-uploads:

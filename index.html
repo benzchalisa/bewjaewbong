@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NestJS ตั้งแต่ศูนย์: ระบบจัดการหนังสือ (CRUD)</title>
+<style>
+:root{--bg:#fafaf8;--card:#fff;--tx:#1d1d1b;--mut:#66665f;--ac:#e0234e;--bd:#e4e4de;--code:#161618;--codetx:#e8e8e8;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141415;--card:#1d1d1f;--tx:#ececea;--mut:#a0a09a;--bd:#33332f;--code:#0b0b0c;color-scheme:dark}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.7 "Noto Sans Thai",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:24px 16px 64px}
+.nav{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--bd)}
+.nav-in{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nav-brand{font-weight:700;color:var(--tx);text-decoration:none;white-space:nowrap}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.nav-repo,.nav-menu summary{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;border:1px solid var(--bd);border-radius:9px;padding:6px 12px;font:inherit;font-size:.88rem;line-height:1.4;text-decoration:none;cursor:pointer}
+.nav-repo{background:var(--ac);border-color:var(--ac);color:#fff}
+.nav-repo:hover{filter:brightness(.94)}
+.nav-menu{position:relative}
+.nav-menu summary{list-style:none;background:var(--card);color:var(--tx);font-weight:600}
+.nav-menu summary::-webkit-details-marker{display:none}
+.nav-menu summary::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .15s ease}
+.nav-menu[open] summary::after{transform:rotate(225deg) translate(-1px,-1px)}
+.nav-menu summary:hover,.nav-menu[open] summary{border-color:var(--ac);color:var(--ac)}
+.nav-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:min(320px,calc(100vw - 32px));max-height:calc(100dvh - 76px);overflow-y:auto;padding:6px;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 12px 32px #0002}
+.nav-dropdown a{display:block;padding:9px 11px;border-radius:8px;color:var(--tx);text-decoration:none;font-size:.9rem}
+.nav-dropdown a:hover,.nav-dropdown a:focus-visible{background:var(--bg);color:var(--ac);outline:none}
+.nav-dropdown .menu-group{padding:9px 11px 3px;color:var(--mut);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.nav-menu summary:focus-visible,.nav-repo:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 40%,transparent);outline-offset:2px}
+[id]{scroll-margin-top:96px}
+h1{font-size:1.8rem;margin:.2em 0}h2{font-size:1.3rem;margin:2em 0 .6em}
+.sub{color:var(--mut);margin:0 0 1.5em}
+.step{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px 18px;margin:14px 0}
+.step h3{margin:0 0 6px;font-size:1.05rem}.step h3 span{display:inline-block;background:var(--ac);color:#fff;border-radius:50%;width:26px;height:26px;text-align:center;line-height:26px;font-size:.85rem;margin-right:8px}
+.step p{margin:.4em 0}
+.cb{position:relative;margin:8px 0;max-width:100%}
+pre{background:var(--code);color:var(--codetx);padding:12px 14px;border-radius:8px;overflow-x:auto;margin:0;font:13.5px/1.55 ui-monospace,Menlo,Consolas,monospace}
+.cp{position:absolute;top:6px;right:6px;border:0;background:#ffffff22;color:#ddd;border-radius:6px;padding:2px 9px;font-size:12px;cursor:pointer}
+code.i{background:var(--bd);padding:1px 6px;border-radius:4px;font-size:.9em}
+.note{border-left:4px solid var(--ac);padding:6px 12px;background:var(--card);border-radius:0 8px 8px 0;margin:10px 0;color:var(--mut)}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid var(--bd);padding:6px 10px;text-align:left;font-size:.92rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.lk{display:block;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;text-decoration:none;color:inherit}
+.lk:hover{border-color:var(--ac)}
+.lk b{display:block;color:var(--ac)}.lk small{color:var(--mut);display:block;margin-top:2px}.lk .u{font-size:.75rem;word-break:break-all;opacity:.7}
+.cat{font-size:.95rem;color:var(--mut);margin:18px 0 8px;font-weight:600}
+.ts summary{cursor:pointer;font-weight:600;padding:10px 14px;background:var(--card);border:1px solid var(--bd);border-radius:10px;margin:8px 0}
+.ts details[open]>summary{border-color:var(--ac)}
+.ts td:nth-child(2),.ts td:nth-child(3){font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.ts td:nth-child(2){min-width:230px}.ts td:nth-child(3){color:var(--ac);min-width:150px}
+.ts td small{color:var(--mut)}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-in">
+<a class="nav-brand" href="#">📚 NestJS CRUD</a>
+<div class="nav-actions">
+<a class="nav-repo" href="https://github.com/MANAPHAT56/web" target="_blank" rel="noopener">ดาวน์โหลด BookShelf ↗</a>
+<details class="nav-menu">
+<summary aria-label="เปิดเมนูนำทาง">เมนู</summary>
+<div class="nav-dropdown">
+<div class="menu-group">เริ่มใช้งาน</div>
+<a href="#bookshelf">BookShelf ใน GitHub repo</a>
+<a href="#docker">ติดตั้งด้วย Docker</a>
+<a href="#crud-check">ทดสอบ CRUD และฐานข้อมูล</a>
+<div class="menu-group">คู่มือและตัวอย่าง</div>
+<a href="#start">เริ่ม NestJS จากศูนย์</a>
+<a href="#swagger">Swagger</a>
+<a href="#gen-h">OpenAPI / Postman</a>
+<a href="#backend">ตัวอย่าง Backend</a>
+<a href="#frontend">ตัวอย่าง Frontend</a>
+<a href="#next-h">ฟังก์ชัน Next.js</a>
+<a href="#ts-h">ฟังก์ชัน TypeScript</a>
+<a href="#th-links">ลิงก์เรียนรู้ภาษาไทย</a>
+<a href="#en-links">ลิงก์เรียนรู้ภาษาอังกฤษ</a>
+</div>
+</details>
+</div>
+</div>
+</nav>
+<main>
+<h1>NestJS ตั้งแต่ศูนย์: ระบบจัดการหนังสือ</h1>
+<p class="sub">คู่มือ NestJS, Next.js และ CRUD พร้อมตัวอย่างโปรเจกต์ BookShelf ที่รัน API และ SQLite จริงด้วย Docker Compose</p>
+
+<h2 id="bookshelf">📚 BookShelf อยู่ใน GitHub repo — ดาวน์โหลดได้</h2>
+<p class="sub">ไม่ต้องสร้างโปรเจกต์ใหม่: โค้ด BookShelf ทั้ง frontend และ backend อยู่ใน repository <a href="https://github.com/MANAPHAT56/web" target="_blank" rel="noopener">MANAPHAT56/web</a> ดาวน์โหลด ZIP จาก GitHub หรือ clone repo แล้วเข้าโฟลเดอร์โปรเจกต์ตามด้านล่าง</p>
+<div class="step"><h3><span>1</span>ตำแหน่งไฟล์และดาวน์โหลด</h3>
+<div class="scroll"><table><tr><th>ส่วนระบบ</th><th>ตำแหน่งใน repo</th></tr>
+<tr><td>คู่มือและคำสั่งติดตั้ง</td><td><code>index.html</code>, <code>README.md</code>, <code>docker-compose.yml</code></td></tr>
+<tr><td>Backend / API</td><td><code>book-review-backend/book-review-api/</code></td></tr>
+<tr><td>ฐานข้อมูลและ migration</td><td><code>book-review-backend/book-review-api/prisma/</code></td></tr>
+<tr><td>Frontend / Next.js</td><td><code>book-review-frontend/book-review-frontend (Unzipped Files)/</code></td></tr></table></div>
+<p>หากใช้ Git ให้ดาวน์โหลดทั้ง repository เพื่อให้ Docker Compose เห็นทั้ง frontend และ backend:</p>
+<div class="cb"><pre>git clone https://github.com/MANAPHAT56/web.git
+cd web</pre></div>
+<p class="note">ไฟล์ที่ดาวน์โหลดจาก repo อาจยังไม่มี <code class="i">.env</code> เพราะเป็นค่าตั้งค่าเฉพาะเครื่อง ให้สร้างจาก <code class="i">.env.example</code> ในขั้นตอนถัดไป</p></div>
+
+<h2 id="docker">🚀 เปิด BookShelf ด้วย Docker</h2>
+<p class="sub">เริ่มจากโฟลเดอร์รากของ repo ที่มี <code class="i">docker-compose.yml</code> ระบบจะเปิด Next.js, NestJS API และ SQLite พร้อม migration และ persistent volumes ให้เอง</p>
+<div class="step"><h3><span>2</span>ติดตั้งและเปิดระบบบน Windows</h3>
+<p>ติดตั้ง Docker Desktop และเปิด Docker Engine ก่อน จากนั้นเปิด PowerShell ที่โฟลเดอร์โปรเจกต์ (เช่น <code class="i">C:\Users\ttpho\Downloads\api-exam</code>)</p>
+<div class="cb"><pre>Copy-Item .env.example .env
+docker compose up --build -d
+docker compose ps</pre></div>
+<p>เปิดหน้าเว็บที่ <code class="i">http://localhost:3001</code> และ API health check ที่ <code class="i">http://localhost:3000/health</code> เมื่อ API พร้อมจะตอบ <code class="i">{"status":"ok"}</code> การเริ่ม API จะรัน <code class="i">prisma migrate deploy</code> เพื่อสร้างตารางจาก migration โดยอัตโนมัติ</p></div>
+
+<div class="step" id="crud-check"><h3><span>3</span>ทดสอบ CRUD และตรวจฐานข้อมูลจริง</h3>
+<p>สร้างหนังสือและรีวิวผ่าน REST API แล้วอ่านรายการกลับมาได้ คำสั่ง PowerShell ตัวอย่าง:</p>
+<div class="cb"><pre>$book = Invoke-RestMethod -Method Post http://localhost:3000/books `
+  -ContentType 'application/json' `
+  -Body '{"title":"Docker Test","author":"API Check"}'
+
+$review = Invoke-RestMethod -Method Post "http://localhost:3000/books/$($book.id)/reviews" `
+  -ContentType 'application/json' `
+  -Body '{"rating":5,"content":"บันทึกจาก API"}'
+
+Invoke-RestMethod -Method Patch "http://localhost:3000/books/$($book.id)" `
+  -ContentType 'application/json' -Body '{"title":"Updated Docker Test"}'
+
+Invoke-RestMethod "http://localhost:3000/books/$($book.id)" | ConvertTo-Json -Depth 5</pre></div>
+<p>ตรวจแถวใน SQLite ผ่าน Prisma Client ภายใน API container ได้อีกทาง:</p>
+<div class="cb"><pre>docker compose exec api node -e 'const {PrismaClient}=require("@prisma/client");const p=new PrismaClient();p.book.findMany({include:{reviews:true}}).then(rows=>console.log(JSON.stringify(rows))).finally(()=>p.$disconnect())'</pre></div>
+<p>ถ้าค่าที่อ่านได้มีหนังสือและรีวิวที่เพิ่งสร้าง แปลว่าข้อมูล persist อยู่ในฐานข้อมูล ไม่ได้อยู่แค่ใน response จาก API</p></div>
+
+<div class="step"><h3><span>4</span>Endpoints และการเก็บข้อมูล</h3>
+<div class="scroll"><table><tr><th>Method</th><th>Path</th><th>การทำงาน</th></tr>
+<tr><td>POST / GET</td><td><code>/books</code></td><td>เพิ่มหนังสือ / ดูรายการหนังสือและรีวิว</td></tr>
+<tr><td>GET / PATCH / DELETE</td><td><code>/books/:id</code></td><td>อ่าน / แก้ไข / ลบหนังสือ (ลบรีวิวที่เกี่ยวข้องตาม)</td></tr>
+<tr><td>POST / GET</td><td><code>/books/:bookId/reviews</code></td><td>เพิ่ม / ดูรีวิว</td></tr>
+<tr><td>PATCH / DELETE</td><td><code>/books/:bookId/reviews/:reviewId</code></td><td>แก้ไข / ลบรีวิว</td></tr>
+<tr><td>POST</td><td><code>/books/upload</code></td><td>อัปโหลดปก JPG, PNG หรือ WebP ขนาดไม่เกิน 5 MB</td></tr>
+<tr><td>GET</td><td><code>/health</code></td><td>ตรวจสถานะ API</td></tr></table></div>
+<p>ฐานข้อมูลอยู่ใน volume <code class="i">book-review-data</code> และไฟล์ภาพอยู่ใน <code class="i">book-review-uploads</code> หยุดระบบโดยไม่ลบข้อมูลด้วยคำสั่งนี้:</p>
+<div class="cb"><pre>docker compose down</pre></div>
+<p>ลบข้อมูลถาวรและไฟล์ภาพด้วย <code class="i">docker compose down --volumes</code> เท่านั้น คำสั่งนี้ลบข้อมูลทั้งหมดใน volumes</p></div>
+
+<h2 id="start">เริ่ม NestJS จากศูนย์ (กรณีไม่ได้ใช้ BookShelf)</h2>
+
+<div class="step"><h3><span>1</span>ติดตั้ง Node.js</h3>
+<p>ดาวน์โหลดเวอร์ชัน <b>LTS</b> จาก nodejs.org (npm จะติดมาด้วย) แล้วเช็คใน terminal</p>
+<div class="cb"><pre>node -v
+npm -v</pre></div></div>
+
+<div class="step"><h3><span>2</span>ติดตั้ง Nest CLI</h3>
+<p>เครื่องมือบรรทัดคำสั่งของ NestJS ติดตั้งครั้งเดียวใช้ได้ทุกโปรเจกต์</p>
+<div class="cb"><pre>npm i -g @nestjs/cli
+nest --version</pre></div>
+<p class="note">ถ้าขึ้น <code class="i">nest is not recognized</code> ให้ปิดแล้วเปิด terminal ใหม่ ส่วน Windows PowerShell ที่ติด execution policy ให้ใช้ Command Prompt แทน</p></div>
+
+<div class="step"><h3><span>3</span>สร้างโฟลเดอร์และโปรเจกต์</h3>
+<p>เลือกที่เก็บงาน แล้วให้ Nest สร้างโฟลเดอร์โปรเจกต์ให้เอง (ไม่ต้อง mkdir ชื่อโปรเจกต์) เลือก <b>npm</b> เมื่อถูกถาม</p>
+<div class="cb"><pre>mkdir projects &amp;&amp; cd projects
+nest new library-api
+cd library-api</pre></div></div>
+
+<div class="step"><h3><span>4</span>รันครั้งแรก</h3>
+<div class="cb"><pre>npm run start:dev</pre></div>
+<p>เปิด <code class="i">http://localhost:3000</code> จะเห็น <b>Hello World!</b> โหมดนี้รีสตาร์ทเองทุกครั้งที่เซฟไฟล์ (หยุดด้วย Ctrl+C)</p></div>
+
+<div class="step"><h3><span>5</span>ติดตั้งแพ็กเกจเพิ่ม</h3>
+<div class="cb"><pre>npm install class-validator class-transformer @nestjs/swagger</pre></div>
+<p>สองตัวแรกใช้ตรวจความถูกต้องของข้อมูล (ตอบ 400) ตัวที่สามสร้างหน้าเอกสาร API ที่ <code class="i">/docs</code></p></div>
+
+<div class="step"><h3><span>6</span>สร้างโครง CRUD</h3>
+<div class="cb"><pre>nest g resource books</pre></div>
+<p>เลือก <b>REST API</b> และตอบ <b>Yes</b> ตอนถามเรื่อง CRUD entry points จะได้ module, controller, service, DTO และ entity ครบ จากนั้นนำโค้ดของ <code class="i">books.controller.ts</code>, <code class="i">books.service.ts</code>, <code class="i">book.dto.ts</code> ที่ผมให้ไว้ก่อนหน้านี้มาวางทับ</p>
+<p class="note">ตัวสร้างอัตโนมัติใช้ <code class="i">PATCH</code> สำหรับแก้ไข แต่โจทย์ของเราใช้ <code class="i">PUT</code> จึงต้องแก้ใน controller ตามโค้ดที่ให้ไว้</p>
+<div class="scroll"><table><tr><th>ไฟล์</th><th>หน้าที่</th></tr>
+<tr><td>books.controller.ts</td><td>กำหนด route GET/POST/PUT/DELETE</td></tr>
+<tr><td>books.service.ts</td><td>ตรรกะและข้อมูลจำลอง</td></tr>
+<tr><td>dto/book.dto.ts</td><td>รูปแบบข้อมูลและ validation</td></tr></table></div></div>
+
+<div class="step"><h3><span>7</span>เปิด Validation และ Swagger ใน main.ts</h3>
+<div class="cb"><pre>import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe());
+  const cfg = new DocumentBuilder().setTitle('Library API').build();
+  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, cfg));
+  await app.listen(3000);
+}
+bootstrap();</pre></div></div>
+
+<div class="step"><h3><span>8</span>ทดสอบ</h3>
+<p>เปิด <code class="i">http://localhost:3000/docs</code> แล้วกด <b>Try it out</b> หรือใช้ curl</p>
+<div class="cb"><pre>curl http://localhost:3000/books
+curl -i http://localhost:3000/books/999   # ได้ 404</pre></div>
+<div class="scroll"><table><tr><th>คำสั่ง</th><th>ใช้ทำอะไร</th></tr>
+<tr><td>npm run start:dev</td><td>รันตอนพัฒนา (auto reload)</td></tr>
+<tr><td>npm run build</td><td>คอมไพล์เป็นโฟลเดอร์ dist</td></tr>
+<tr><td>npm run start:prod</td><td>รันจากโค้ดที่ build แล้ว</td></tr>
+<tr><td>npm run test</td><td>รันเทสต์</td></tr></table></div></div>
+
+<div class="step"><h3>ปัญหาที่พบบ่อย</h3>
+<p><b>Cannot find module './dto/book.dto'</b> แปลว่าไฟล์ไม่ได้อยู่ที่ <code class="i">src/books/dto/book.dto.ts</code> หรือชื่อสะกดไม่ตรง<br>
+<b>EADDRINUSE</b> แปลว่าพอร์ต 3000 ถูกใช้อยู่ ให้ปิดโปรเจกต์เดิมหรือเปลี่ยนพอร์ตใน <code class="i">listen()</code></p></div>
+
+<h2 id="swagger">การใช้ Swagger</h2>
+<div class="step"><h3>Swagger ทำอะไรได้</h3>
+<p>สร้างหน้าเอกสาร API ให้อัตโนมัติจากโค้ด เปิดที่ <code class="i">/docs</code> เห็นทุก endpoint และกด <b>Try it out</b> เพื่อยิง API ทดสอบได้เลย (ตั้งค่าใน <code class="i">main.ts</code> ตามขั้นที่ 7 ด้านบน)</p>
+<p><b>DTO</b> ใส่ <code class="i">@ApiProperty({ example: ... })</code> เพื่อให้ช่อง Request body มีตัวอย่างข้อมูล</p>
+<p><b>Controller</b> ใส่ decorator เหล่านี้เพื่อบอกสถานะที่ตอบกลับ</p>
+<div class="cb"><pre>import { ApiTags, ApiOperation, ApiOkResponse,
+  ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+
+@ApiTags('books')            // จัดกลุ่มหัวข้อ
+@Controller('books')
+export class BooksController {
+  @Get(':id')
+  @ApiOperation({ summary: 'ดึงหนังสือเล่มเดียว' })
+  @ApiOkResponse({ description: 'พบหนังสือ (200)' })
+  @ApiNotFoundResponse({ description: 'ไม่พบหนังสือ (404)' })
+  findOne(@Param('id', ParseIntPipe) id: number) { ... }
+
+  @Post()
+  @ApiCreatedResponse({ description: 'สร้างสำเร็จ (201)' })
+  create(@Body() dto: BookDto) { ... }
+}</pre></div>
+<p class="note">ถ้าอยากไม่ต้องเขียน @ApiProperty ทุกฟิลด์ ให้เปิด CLI plugin โดยเพิ่ม <code class="i">@nestjs/swagger</code> ใน <code class="i">nest-cli.json</code> (ดูลิงก์หัวข้อ “เรื่อง Swagger” ท้ายหน้า)</p></div>
+
+<h2 id="gen-h">🔁 Gen โค้ดจาก OpenAPI / Postman (ไม่ต้องเริ่มจาก 0)</h2>
+<p class="sub">อาจารย์ให้ Swagger (OpenAPI) มาแล้ว ใช้ตัว generator สร้างโครง controller และ DTO ให้ก่อน จากนั้นค่อยเติมตรรกะใน service คำสั่งด้านล่างรวบรวมจากเอกสารของแต่ละเครื่องมือ ผมยังไม่ได้ลองรันเอง ถ้า error ให้เทียบกับ README ของแพ็กเกจนั้น (ลิงก์ท้ายหัวข้อ)</p>
+
+<div class="step"><h3><span>0</span>ดูก่อนว่าได้อะไรมาจากอาจารย์</h3>
+<div class="scroll"><table><tr><th>สิ่งที่ได้มา</th><th>ทำอะไรต่อ</th></tr>
+<tr><td>ไฟล์ openapi.yaml / openapi.json (หรือ swagger.json)</td><td>ไปขั้น 2 ได้เลย</td></tr>
+<tr><td>Postman collection (.json)</td><td>แปลงเป็น OpenAPI ก่อนที่ขั้น 1 แล้วไปขั้น 2</td></tr>
+<tr><td>ลิงก์หน้า Swagger UI</td><td>ถ้าเป็น NestJS ลองเปิด <code class="i">/docs-json</code> ต่อท้ายพาธ Swagger (เช่น <code class="i">http://localhost:3000/docs-json</code>) แล้วเซฟเป็นไฟล์ ถ้าเป็นเซิร์ฟเวอร์อื่นพาธอาจต่างออกไป ดูลิงก์ใต้ชื่อเอกสารในหน้า Swagger UI</td></tr></table></div></div>
+
+<div class="step"><h3><span>1</span>แปลง Postman collection เป็น OpenAPI</h3>
+<p>ใช้แพ็กเกจ <b>postman-to-openapi</b> (รองรับ collection v2.0/v2.1 แปลงเป็น OpenAPI 3.0)</p>
+<div class="cb"><pre>npm i -g postman-to-openapi
+p2o ./collection.json -f ./openapi.yml</pre></div>
+<p class="note">Postman collection คือตัวอย่าง request ไม่ใช่สัญญา API ที่สมบูรณ์ schema ที่ได้เป็นการเดาจากตัวอย่าง ต้องเปิดไฟล์ตรวจเองว่าชนิดข้อมูล field ที่ optional และ response ผิดพลาด (400/404) ครบหรือยัง</p></div>
+
+<div class="step"><h3><span>2</span>Gen โครง NestJS จาก OpenAPI</h3>
+<p><b>ตัวเลือก A: @snow-tzu/nest-openapi-code-generator</b> แบบ contract-first สร้าง controller, DTO (มี class-validator และ @ApiProperty ให้) จาก OpenAPI 3.1</p>
+<div class="cb"><pre>cd library-api
+npm install @snow-tzu/nest-openapi-code-generator
+mkdir specs
+# วางไฟล์ spec ไว้ที่ specs/books.openapi.yaml
+npx openapi-generate --specs ./specs --output ./src/generated</pre></div>
+<p>ตัวสร้างมีโหมด <code class="i">--watch</code> ที่ gen ใหม่เมื่อไฟล์ spec เปลี่ยน และตั้งค่าเพิ่มผ่าน <code class="i">openapi.config.ts</code> ได้ (specsDir, outputDir, generateControllers, generateDtos) ชื่อคลาสที่ได้อิงจากชื่อไฟล์ spec จึงควรตั้งชื่อเป็น <code class="i">books.openapi.yaml</code></p>
+<p><b>ตัวเลือก B: @fresha/openapi-codegen</b> สร้าง module, controller, action และ DTO ตามแนวทางของ NestJS</p>
+<div class="cb"><pre>npm install @fresha/openapi-codegen
+npx fresha-openapi-codegen server-nestjs --input ./openapi.yaml --output .</pre></div>
+<p class="note">ข้อควรระวัง: generator <code class="i">typescript-nestjs</code> ของ OpenAPI Generator (openapi-generator-cli) เป็น <b>ฝั่ง client</b> และยังเป็น experimental ไม่ใช่ตัวสร้างโครง server ดังนั้นสำหรับ backend ให้ใช้ตัวเลือก A หรือ B</p></div>
+
+<div class="step"><h3><span>3</span>ต่อโค้ดที่ gen เข้ากับโปรเจกต์</h3>
+<p>โครงไฟล์ที่ได้ขึ้นกับเครื่องมือและเวอร์ชัน เปิดโฟลเดอร์ผลลัพธ์ดูก่อน แล้วทำตามลำดับนี้</p>
+<div class="scroll"><table><tr><th>ลำดับ</th><th>สิ่งที่ทำ</th></tr>
+<tr><td>1</td><td>เก็บโค้ดที่ gen ไว้ในโฟลเดอร์แยก เช่น <code class="i">src/generated</code> และพยายามไม่แก้ตรงๆ เพราะ gen ใหม่อาจเขียนทับ</td></tr>
+<tr><td>2</td><td>นำ module หรือ controller ที่ได้ไป import ใน <code class="i">app.module.ts</code></td></tr>
+<tr><td>3</td><td>เติมตรรกะที่เป็นข้อมูลจำลอง (หรือต่อฐานข้อมูล) ใน service โดยนำโค้ดจาก <code class="i">books.service.ts</code> ด้านล่างไปปรับ</td></tr>
+<tr><td>4</td><td>รัน <code class="i">npm run start:dev</code> เปิด <code class="i">/docs-json</code> เทียบกับ spec ของอาจารย์ ว่า path, method, ชื่อ field และ status code ตรงกัน</td></tr></table></div></div>
+
+<div class="step"><h3><span>4</span>ตัวอย่าง spec ของระบบ books</h3>
+<p>ถ้ายังไม่มีไฟล์จากอาจารย์ ใช้ไฟล์นี้ทดลอง generator ได้ (ตรงกับ endpoint และ field ในโค้ดด้านล่าง) วางเป็น <code class="i">specs/books.openapi.yaml</code></p>
+<script type="text/plain" data-f="specs/books.openapi.yaml">
+openapi: 3.1.0
+info:
+  title: Library API
+  version: 1.0.0
+paths:
+  /books:
+    get:
+      tags: [books]
+      summary: ดึงหนังสือทั้งหมด
+      responses:
+        '200':
+          description: รายการหนังสือ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      tags: [books]
+      summary: เพิ่มหนังสือ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: สร้างสำเร็จ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: ข้อมูลไม่ถูกต้อง
+  /books/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [books]
+      summary: ดึงหนังสือเล่มเดียว
+      responses:
+        '200':
+          description: พบหนังสือ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: ไม่พบหนังสือ
+    put:
+      tags: [books]
+      summary: แก้ไขหนังสือ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '200':
+          description: แก้ไขสำเร็จ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: ไม่พบหนังสือ
+    delete:
+      tags: [books]
+      summary: ลบหนังสือ
+      responses:
+        '200':
+          description: ลบสำเร็จ คืนเล่มที่ลบ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: ไม่พบหนังสือ
+components:
+  schemas:
+    BookInput:
+      type: object
+      required: [title, author, price]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          example: Clean Code
+        author:
+          type: string
+          minLength: 1
+          example: Robert C. Martin
+        price:
+          type: number
+          minimum: 0
+          example: 590
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/BookInput'
+        - type: object
+          required: [id]
+          properties:
+            id:
+              type: integer
+              example: 1
+</script></div>
+
+<div class="step"><h3><span>5</span>Gen โค้ดฝั่ง Next.js จาก spec เดียวกัน</h3>
+<p>ใช้ spec ตัวเดิมสร้างฟังก์ชันเรียก API พร้อมชนิดข้อมูล แทนการเขียน <code class="i">lib/api.ts</code> เอง</p>
+<div class="cb"><pre>cd library-web
+# orval: สร้าง client พร้อมชนิดข้อมูลจาก OpenAPI v3 หรือ Swagger v2
+npm i -D orval
+npx orval --input ../library-api/specs/books.openapi.yaml --output ./lib/generated/books.ts
+
+# หรือ openapi-typescript: สร้างเฉพาะชนิดข้อมูล TypeScript
+npx openapi-typescript ../library-api/specs/books.openapi.yaml -o ./lib/schema.d.ts</pre></div>
+<p>อีกทางคือ OpenAPI Generator (ต้องมี Java) เช่น <code class="i">npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g typescript-axios -o ./client</code></p></div>
+
+<div class="step"><h3><span>6</span>ไปทางกลับ: สร้าง Postman collection จาก OpenAPI</h3>
+<p>เอาไว้ทดสอบ API โดยไม่ต้องสร้าง request ทีละอัน</p>
+<div class="scroll"><table><tr><th>วิธี</th><th>ทำอย่างไร</th></tr>
+<tr><td>ในแอป Postman</td><td>กด Import แล้วเลือกไฟล์ OpenAPI (รองรับ OpenAPI 2.0, 3.0, 3.1) ได้ collection ที่มีโฟลเดอร์ request และตัวอย่าง response</td></tr>
+<tr><td>CLI (เก็บไฟล์ในโปรเจกต์)</td><td><code class="i">npm i -g openapi-to-postmanv2</code> แล้ว <code class="i">openapi2postmanv2 -s openapi.yml -o postman-collection.json -p</code></td></tr>
+<tr><td>Postman API</td><td>ส่ง <code class="i">POST https://api.getpostman.com/import/openapi</code> เพื่อนำเข้า OpenAPI เป็น collection ใหม่ (ต้องใช้ API key)</td></tr></table></div></div>
+
+<div class="cat">ลิงก์ของเครื่องมือในหัวข้อนี้</div>
+<div class="grid">
+<a class="lk" href="https://github.com/ganesanarun/nest-openapi-code-generator" target="_blank" rel="noopener"><b>nest-openapi-code-generator</b><small>ตัวเลือก A: gen controller และ DTO จาก OpenAPI 3.1</small><small class="u">github.com/ganesanarun/nest-openapi-code-generator</small></a>
+<a class="lk" href="https://npmjs.com/package/@fresha/openapi-codegen-server-nestjs" target="_blank" rel="noopener"><b>@fresha/openapi-codegen-server-nestjs</b><small>ตัวเลือก B: คำสั่ง server-nestjs</small><small class="u">npmjs.com/package/@fresha/openapi-codegen-server-nestjs</small></a>
+<a class="lk" href="https://www.npmjs.com/package/postman-to-openapi" target="_blank" rel="noopener"><b>postman-to-openapi</b><small>แปลง Postman collection เป็น OpenAPI 3.0</small><small class="u">npmjs.com/package/postman-to-openapi</small></a>
+<a class="lk" href="https://learning.postman.com/docs/design-apis/specifications/generate-collections" target="_blank" rel="noopener"><b>Postman: Generate collections</b><small>สร้าง collection จาก OpenAPI ในแอป Postman</small><small class="u">learning.postman.com/docs/design-apis/specifications/generate-collections</small></a>
+<a class="lk" href="https://learning.postman.com/api-docs/api-reference/import/open-api-definition" target="_blank" rel="noopener"><b>Postman API: Import OpenAPI</b><small>นำเข้า OpenAPI ผ่าน API</small><small class="u">learning.postman.com/api-docs/api-reference/import/open-api-definition</small></a>
+<a class="lk" href="https://github.com/orval-labs/orval" target="_blank" rel="noopener"><b>orval</b><small>gen client พร้อมชนิดข้อมูลจาก OpenAPI v3 / Swagger v2 (เอกสารที่ orval.dev)</small><small class="u">github.com/orval-labs/orval</small></a>
+<a class="lk" href="https://dev.to/arnaudcortisse/trying-out-nestjs-part-4-generate-typescript-clients-from-openapi-documents-28mk" target="_blank" rel="noopener"><b>DEV: Generate TypeScript clients from OpenAPI</b><small>ตัวอย่าง gen client จาก /api-json ของ NestJS ด้วย openapi-generator-cli</small><small class="u">dev.to/arnaudcortisse/…-28mk</small></a>
+</div>
+
+<h2>🧱 <span id="backend"></span>โค้ดเต็มฝั่ง Backend (NestJS) ระบบ books</h2>
+<p class="sub">ไฟล์ครบทุกตัวของโปรเจกต์ library-api ที่สร้างด้วย <code class="i">nest g resource books</code> วางทับได้เลย ข้อมูลเก็บในหน่วยความจำ (รีสตาร์ตแล้วหาย) field ใช้ title, author, price ถ้า DTO เดิมของคุณต่างจากนี้ให้ปรับให้ตรงกัน</p>
+
+<div class="step"><h3>โครงไฟล์</h3>
+<div class="cb"><pre>library-api/
+└─ src/
+   ├─ main.ts
+   ├─ app.module.ts
+   └─ books/
+      ├─ books.module.ts
+      ├─ books.controller.ts
+      ├─ books.service.ts
+      ├─ dto/book.dto.ts
+      └─ entities/book.entity.ts</pre></div></div>
+
+<div class="step"><h3>ไฟล์ใน src/books</h3>
+<script type="text/plain" data-f="src/books/dto/book.dto.ts">
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+
+export class BookDto {
+  @ApiProperty({ example: 'Clean Code' })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @ApiProperty({ example: 'Robert C. Martin' })
+  @IsString()
+  @IsNotEmpty()
+  author: string;
+
+  @ApiProperty({ example: 590 })
+  @IsNumber()
+  @Min(0)
+  price: number;
+}
+</script>
+<script type="text/plain" data-f="src/books/entities/book.entity.ts">
+export class Book {
+  id: number;
+  title: string;
+  author: string;
+  price: number;
+}
+</script>
+<script type="text/plain" data-f="src/books/books.service.ts">
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { BookDto } from './dto/book.dto';
+import { Book } from './entities/book.entity';
+
+@Injectable()
+export class BooksService {
+  private books: Book[] = [
+    { id: 1, title: 'Clean Code', author: 'Robert C. Martin', price: 590 },
+    { id: 2, title: 'The Pragmatic Programmer', author: 'Andrew Hunt', price: 650 },
+  ];
+  private nextId = 3;
+
+  findAll(): Book[] {
+    return this.books;
+  }
+
+  findOne(id: number): Book {
+    const book = this.books.find((b) => b.id === id);
+    if (!book) throw new NotFoundException(`Book ${id} not found`);
+    return book;
+  }
+
+  create(dto: BookDto): Book {
+    const book: Book = { id: this.nextId++, ...dto };
+    this.books.push(book);
+    return book;
+  }
+
+  update(id: number, dto: BookDto): Book {
+    const book = this.findOne(id);
+    Object.assign(book, dto);
+    return book;
+  }
+
+  remove(id: number): Book {
+    const book = this.findOne(id);
+    this.books = this.books.filter((b) => b.id !== id);
+    return book;
+  }
+}
+</script>
+<script type="text/plain" data-f="src/books/books.controller.ts">
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { BooksService } from './books.service';
+import { BookDto } from './dto/book.dto';
+
+@ApiTags('books')
+@Controller('books')
+export class BooksController {
+  constructor(private readonly booksService: BooksService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'ดึงหนังสือทั้งหมด' })
+  @ApiOkResponse({ description: 'รายการหนังสือ (200)' })
+  findAll() {
+    return this.booksService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'ดึงหนังสือเล่มเดียว' })
+  @ApiOkResponse({ description: 'พบหนังสือ (200)' })
+  @ApiNotFoundResponse({ description: 'ไม่พบหนังสือ (404)' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.booksService.findOne(id);
+  }
+
+  @Post()
+  @ApiCreatedResponse({ description: 'สร้างสำเร็จ (201)' })
+  create(@Body() dto: BookDto) {
+    return this.booksService.create(dto);
+  }
+
+  @Put(':id')
+  @ApiOkResponse({ description: 'แก้ไขสำเร็จ (200)' })
+  @ApiNotFoundResponse({ description: 'ไม่พบหนังสือ (404)' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: BookDto) {
+    return this.booksService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOkResponse({ description: 'ลบสำเร็จ คืนเล่มที่ลบ (200)' })
+  @ApiNotFoundResponse({ description: 'ไม่พบหนังสือ (404)' })
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.booksService.remove(id);
+  }
+}
+</script>
+<script type="text/plain" data-f="src/books/books.module.ts">
+import { Module } from '@nestjs/common';
+import { BooksController } from './books.controller';
+import { BooksService } from './books.service';
+
+@Module({
+  controllers: [BooksController],
+  providers: [BooksService],
+})
+export class BooksModule {}
+</script></div>
+
+<div class="step"><h3>app.module.ts และ main.ts</h3>
+<p>ใน <code class="i">main.ts</code> เพิ่ม <code class="i">enableCors</code> เพื่อให้ Next.js (พอร์ต 3001) เรียก API ได้ และเปิด <code class="i">whitelist</code> ให้ตัด field แปลกปลอมทิ้ง</p>
+<script type="text/plain" data-f="src/app.module.ts">
+import { Module } from '@nestjs/common';
+import { BooksModule } from './books/books.module';
+
+@Module({
+  imports: [BooksModule],
+})
+export class AppModule {}
+</script>
+<script type="text/plain" data-f="src/main.ts">
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.enableCors({ origin: 'http://localhost:3001' });
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  const cfg = new DocumentBuilder().setTitle('Library API').build();
+  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, cfg));
+  await app.listen(3000);
+}
+bootstrap();
+</script></div>
+
+<h2>🖥️ <span id="frontend"></span>ฝั่ง Frontend (Next.js) ต่อกับ books</h2>
+<p class="sub">ใช้ App Router + TypeScript หน้าแรกเป็น Server Component ดึงรายการหนังสือ ส่วนฟอร์มเพิ่ม/แก้ไขและปุ่มลบเป็น Client Component</p>
+
+<div class="step"><h3><span>1</span>สร้างโปรเจกต์ Next.js</h3>
+<p>เปิด terminal ใหม่ ออกจากโฟลเดอร์ library-api แล้วสร้างโปรเจกต์ข้างๆ (ถ้ามีคำถามเพิ่ม เช่น React Compiler หรือ Turbopack ให้กด Enter ใช้ค่าเริ่มต้น)</p>
+<div class="cb"><pre>cd ..
+npx create-next-app@latest library-web --typescript --app --no-tailwind --eslint --no-src-dir --import-alias "@/*"
+cd library-web</pre></div></div>
+
+<div class="step"><h3><span>2</span>ตั้งพอร์ตเป็น 3001</h3>
+<p>Nest ใช้พอร์ต 3000 อยู่แล้ว แก้ส่วน scripts ใน <code class="i">package.json</code></p>
+<script type="text/plain" data-f="package.json (เฉพาะส่วน scripts)">
+"scripts": {
+  "dev": "next dev -p 3001",
+  "build": "next build",
+  "start": "next start -p 3001",
+  "lint": "next lint"
+}
+</script>
+<p>แล้วสร้างไฟล์ <code class="i">.env.local</code> ที่รากโปรเจกต์ (ค่าที่ขึ้นต้น NEXT_PUBLIC_ ใช้ได้ทั้งฝั่ง server และ browser)</p>
+<script type="text/plain" data-f=".env.local">
+NEXT_PUBLIC_API_URL=http://localhost:3000
+</script></div>
+
+<div class="step"><h3><span>3</span>โครงไฟล์</h3>
+<div class="cb"><pre>library-web/
+├─ .env.local
+├─ lib/api.ts
+├─ components/
+│  ├─ BookForm.tsx
+│  └─ DeleteButton.tsx
+└─ app/
+   ├─ globals.css
+   ├─ layout.tsx
+   ├─ page.tsx                  (รายการ)
+   └─ books/
+      ├─ new/page.tsx           (เพิ่ม)
+      └─ [id]/edit/page.tsx     (แก้ไข)</pre></div>
+<p class="note">สร้างโฟลเดอร์ <code class="i">lib</code> และ <code class="i">components</code> ที่รากโปรเจกต์เอง ส่วนไฟล์ใน <code class="i">app</code> ให้วางทับไฟล์เดิม (ลบ <code class="i">app/page.module.css</code> ทิ้งได้)</p></div>
+
+<div class="step"><h3><span>4</span>ตัวเรียก API</h3>
+<script type="text/plain" data-f="lib/api.ts">
+export type Book = { id: number; title: string; author: string; price: number };
+export type BookInput = Omit<Book, 'id'>;
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${API}${path}`, {
+    cache: 'no-store',
+    ...init,
+    headers: { 'Content-Type': 'application/json', ...init?.headers },
+  });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json() as Promise<T>;
+}
+
+export const getBooks = () => request<Book[]>('/books');
+export const getBook = (id: number | string) => request<Book>(`/books/${id}`);
+export const createBook = (b: BookInput) =>
+  request<Book>('/books', { method: 'POST', body: JSON.stringify(b) });
+export const updateBook = (id: number, b: BookInput) =>
+  request<Book>(`/books/${id}`, { method: 'PUT', body: JSON.stringify(b) });
+export const deleteBook = (id: number) =>
+  request<Book>(`/books/${id}`, { method: 'DELETE' });
+</script></div>
+
+<div class="step"><h3><span>5</span>Components (Client)</h3>
+<script type="text/plain" data-f="components/DeleteButton.tsx">
+'use client';
+import { useRouter } from 'next/navigation';
+import { deleteBook } from '@/lib/api';
+
+export default function DeleteButton({ id }: { id: number }) {
+  const router = useRouter();
+
+  async function onDelete() {
+    if (!confirm('ลบหนังสือเล่มนี้?')) return;
+    await deleteBook(id);
+    router.refresh(); // โหลดรายการใหม่โดยไม่รีโหลดทั้งหน้า
+  }
+
+  return <button className="danger" onClick={onDelete}>ลบ</button>;
+}
+</script>
+<script type="text/plain" data-f="components/BookForm.tsx">
+'use client';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Book, BookInput, createBook, updateBook } from '@/lib/api';
+
+export default function BookForm({ book }: { book?: Book }) {
+  const router = useRouter();
+  const [form, setForm] = useState<BookInput>({
+    title: book?.title ?? '',
+    author: book?.author ?? '',
+    price: book?.price ?? 0,
+  });
+  const [error, setError] = useState('');
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    try {
+      if (book) await updateBook(book.id, form);
+      else await createBook(form);
+      router.push('/');
+      router.refresh();
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
+      <label>
+        ชื่อหนังสือ
+        <input value={form.title} required
+          onChange={(e) => setForm({ ...form, title: e.target.value })} />
+      </label>
+      <label>
+        ผู้แต่ง
+        <input value={form.author} required
+          onChange={(e) => setForm({ ...form, author: e.target.value })} />
+      </label>
+      <label>
+        ราคา
+        <input type="number" min={0} value={form.price}
+          onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} />
+      </label>
+      {error && <p className="error">{error}</p>}
+      <button type="submit">{book ? 'บันทึก' : 'เพิ่ม'}</button>
+    </form>
+  );
+}
+</script></div>
+
+<div class="step"><h3><span>6</span>หน้าเว็บใน app/</h3>
+<script type="text/plain" data-f="app/layout.tsx">
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'Library',
+  description: 'ระบบจัดการหนังสือ',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="th">
+      <body>{children}</body>
+    </html>
+  );
+}
+</script>
+<script type="text/plain" data-f="app/page.tsx">
+import Link from 'next/link';
+import { getBooks } from '@/lib/api';
+import DeleteButton from '@/components/DeleteButton';
+
+export default async function Home() {
+  const books = await getBooks(); // รันบน server
+  return (
+    <main>
+      <h1>รายการหนังสือ</h1>
+      <Link href="/books/new" className="btn">+ เพิ่มหนังสือ</Link>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>ชื่อ</th><th>ผู้แต่ง</th><th>ราคา</th><th></th></tr>
+        </thead>
+        <tbody>
+          {books.map((b) => (
+            <tr key={b.id}>
+              <td>{b.id}</td>
+              <td>{b.title}</td>
+              <td>{b.author}</td>
+              <td>{b.price}</td>
+              <td>
+                <Link href={`/books/${b.id}/edit`}>แก้ไข</Link>
+                <DeleteButton id={b.id} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </main>
+  );
+}
+</script>
+<script type="text/plain" data-f="app/books/new/page.tsx">
+import BookForm from '@/components/BookForm';
+
+export default function NewBook() {
+  return (
+    <main>
+      <h1>เพิ่มหนังสือ</h1>
+      <BookForm />
+    </main>
+  );
+}
+</script>
+<script type="text/plain" data-f="app/books/[id]/edit/page.tsx">
+import { notFound } from 'next/navigation';
+import BookForm from '@/components/BookForm';
+import { getBook } from '@/lib/api';
+
+export default async function EditBook({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params; // Next 15 ขึ้นไป params เป็น Promise
+  const book = await getBook(id).catch(() => null);
+  if (!book) notFound();
+  return (
+    <main>
+      <h1>แก้ไขหนังสือ</h1>
+      <BookForm book={book} />
+    </main>
+  );
+}
+</script>
+<script type="text/plain" data-f="app/globals.css">
+body { font-family: system-ui, sans-serif; margin: 0; background: #fafafa; color: #222; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+td, th { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+form { display: grid; gap: 12px; max-width: 420px; }
+label { display: grid; gap: 4px; }
+input { padding: 8px; border: 1px solid #bbb; border-radius: 6px; }
+.btn, button { background: #e0234e; color: #fff; border: 0; border-radius: 6px;
+  padding: 8px 14px; cursor: pointer; text-decoration: none; }
+button.danger { background: #555; margin-left: 8px; }
+.error { color: #c00; }
+</script></div>
+
+<div class="step"><h3><span>7</span>รันทั้งสองฝั่งและทดสอบ</h3>
+<p>เปิด 2 terminal แยกกัน</p>
+<div class="cb"><pre># terminal 1 (backend พอร์ต 3000)
+cd library-api
+npm run start:dev
+
+# terminal 2 (frontend พอร์ต 3001)
+cd library-web
+npm run dev</pre></div>
+<p>เปิด <code class="i">http://localhost:3001</code> ควรเห็นหนังสือ 2 เล่มจาก Nest ลองกดเพิ่ม แก้ไข และลบ แล้วเช็คที่ <code class="i">http://localhost:3000/docs</code> ว่าข้อมูลตรงกัน</p>
+<div class="scroll"><table><tr><th>อาการ</th><th>สาเหตุและวิธีแก้</th></tr>
+<tr><td>fetch failed / ECONNREFUSED</td><td>Backend ยังไม่รัน หรือ NEXT_PUBLIC_API_URL ผิด (แก้ .env.local แล้วต้องรีสตาร์ต npm run dev)</td></tr>
+<tr><td>CORS error ใน browser</td><td>ลืม <code class="i">enableCors</code> ใน main.ts หรือยังไม่รีสตาร์ต Nest</td></tr>
+<tr><td>กดบันทึกแล้วได้ 400</td><td>ข้อมูลไม่ผ่าน validation เช่น ชื่อว่าง หรือราคาติดลบ</td></tr>
+<tr><td>Cannot find module '@/lib/api'</td><td>โฟลเดอร์ lib ต้องอยู่ที่รากโปรเจกต์ (ไม่ใช่ใน app) และ import alias ต้องเป็น @/*</td></tr></table></div></div>
+
+<h2>⚡ <span id="next-h"></span>ฟังก์ชันของ Next.js ที่ใช้บ่อย</h2>
+<p class="sub">กดหัวข้อเพื่อดูฟังก์ชัน ตัวอย่าง และผลลัพธ์ อ้างอิงจาก App Router ถ้าใช้คนละเวอร์ชัน (บางส่วนเปลี่ยนใน Next 15 และ 16) ให้เทียบกับ nextjs.org/docs</p>
+<div class="ts" id="nxref"></div>
+
+<script>
+document.querySelectorAll('script[type="text/plain"][data-f]').forEach(s=>{
+ const h=document.createElement('div');h.className='cat';h.textContent=s.dataset.f;
+ const cb=document.createElement('div');cb.className='cb';
+ const pre=document.createElement('pre');pre.textContent=s.textContent.trim();cb.appendChild(pre);
+ s.after(h,cb);
+});
+const N=[
+['nav','การนำทาง (next/link, next/navigation)',`Link§ลิงก์ข้ามหน้าโดยไม่โหลดทั้งหน้า§<Link href="/books/new">เพิ่ม</Link>§ไปหน้า /books/new และ prefetch ให้ล่วงหน้า
+useRouter().push§เปลี่ยนหน้าด้วยโค้ด§const router = useRouter(); router.push('/')§ไปหน้าแรก (เก็บลง history)
+router.replace§เหมือน push แต่ไม่เก็บ history§router.replace('/login')§กดย้อนกลับแล้วไม่กลับมาหน้าเดิม
+router.refresh§โหลดข้อมูลของ Server Component ใหม่§router.refresh()§ตารางหนังสืออัปเดตโดยไม่รีโหลดหน้า
+router.back§ย้อนกลับ§router.back()§กลับหน้าก่อนหน้า
+usePathname§path ปัจจุบัน§const p = usePathname()§'/books/1/edit'
+useParams§พารามิเตอร์ใน URL (Client Component)§const { id } = useParams()§id = '1' (เป็น string เสมอ)
+useSearchParams§อ่าน query string§useSearchParams().get('q')§ที่ /?q=nest ได้ 'nest'
+redirect§ย้ายหน้าฝั่ง server§redirect('/')§ส่งผู้ใช้ไปหน้าแรกทันที
+notFound§แสดงหน้า 404§if (!book) notFound()§แสดง not-found.tsx`],
+['data','ดึงข้อมูลและ cache',`fetch (server)§ดึงข้อมูลใน Server Component§await fetch(url, { cache: 'no-store' })§ได้ข้อมูลสดทุกครั้ง (Next 15 ขึ้นไป ค่าเริ่มต้นไม่ cache อยู่แล้ว)
+fetch + revalidate§cache แล้วรีเฟรชทุก n วินาที§fetch(url, { next: { revalidate: 60 } })§ใช้ข้อมูลเก่าได้นานสุด 60 วินาที
+revalidatePath§ล้าง cache ของ path (ใช้ใน Server Action หรือ Route Handler)§revalidatePath('/')§หน้าแรกถูกสร้างใหม่เมื่อมีคนเปิดครั้งถัดไป
+Server Action§ฟังก์ชันที่รันบน server เรียกจากฟอร์มได้เลย§'use server'; export async function add(fd: FormData) { ... }§ใช้ <form action={add}> โดยไม่ต้องเขียน API ฝั่ง client
+cookies§อ่าน/เขียนคุกกี้ (ต้อง await ใน 15 ขึ้นไป)§const c = await cookies(); c.get('token')§{ name: 'token', value: '...' } หรือ undefined
+headers§อ่าน header ของ request§const h = await headers(); h.get('user-agent')§ข้อความ user-agent
+'use client'§ประกาศว่าไฟล์นี้เป็น Client Component§'use client'; (บรรทัดแรกของไฟล์)§ใช้ useState, useEffect และ onClick ได้
+useState§เก็บสถานะ (Client)§const [n, setN] = useState(0); setN(n + 1)§n = 1 และหน้าวาดใหม่
+useEffect§รันโค้ดหลังวาดหน้า§useEffect(() => { getBooks().then(setBooks) }, [])§ดึงข้อมูลครั้งแรกหลังหน้าโหลด`],
+['ui','Component, Metadata และ Route',`Image (next/image)§รูปที่ปรับขนาดและ lazy load§<Image src="/cover.png" alt="ปก" width={200} height={300} />§โหลดรูปขนาดพอดีหน้าจอ ลด layout shift
+next/font§โหลดฟอนต์แบบไม่ขอจากภายนอกตอนรัน§const f = Noto_Sans_Thai({ subsets: ['thai'] }); className={f.className}§ใช้ฟอนต์ไทยทั้งหน้า
+metadata§กำหนด title และ description§export const metadata = { title: 'Library' }§แท็บ browser แสดง Library
+generateMetadata§metadata แบบ dynamic§export async function generateMetadata({ params }) { ... }§title เปลี่ยนตามหนังสือแต่ละเล่ม
+generateStaticParams§สร้างหน้า dynamic ล่วงหน้าตอน build§export async function generateStaticParams() { return [{ id: '1' }] }§สร้าง /books/1 เป็นหน้า static
+loading.tsx§แสดงระหว่างรอข้อมูล§app/books/loading.tsx → return <p>กำลังโหลด...</p>§เห็นข้อความขณะ Server Component ยังดึงข้อมูล
+error.tsx§จัดการ error ของหน้า (ต้องเป็น Client)§'use client'; export default function Error({ reset }) { ... }§แสดงหน้า error พร้อมปุ่ม reset ลองใหม่
+not-found.tsx§หน้า 404 ของตัวเอง§app/not-found.tsx§แสดงเมื่อเรียก notFound() หรือไม่พบ path
+Route Handler§สร้าง API ใน Next เอง§app/api/ping/route.ts → export async function GET() { return Response.json({ ok: true }) }§GET /api/ping ได้ { "ok": true }
+middleware / proxy§โค้ดที่รันก่อนทุก request (Next 16 เปลี่ยนชื่อไฟล์เป็น proxy.ts)§export function middleware(req) { return NextResponse.next() }§ใช้เช็คล็อกอินหรือ redirect ก่อนถึงหน้า`]
+];
+const nb=document.getElementById('nxref');
+N.forEach(([id,title,rows],k)=>{
+ const d=document.createElement('details');d.id='n-'+id;if(!k)d.open=true;
+ const s=document.createElement('summary');s.textContent=title;d.appendChild(s);
+ const w=document.createElement('div');w.className='scroll';const t=document.createElement('table');
+ t.innerHTML='<thead><tr><th>ฟังก์ชัน</th><th>ตัวอย่าง</th><th>ผลลัพธ์</th></tr></thead><tbody></tbody>';
+ rows.trim().split('\n').forEach(l=>{const [f,ds,c,o]=l.split('§');const tr=t.tBodies[0].insertRow();
+  const a=tr.insertCell();a.innerHTML='<b></b><br><small></small>';a.firstChild.textContent=f;a.lastChild.textContent=ds;
+  tr.insertCell().textContent=c;tr.insertCell().textContent=o;});
+ w.appendChild(t);d.appendChild(w);nb.appendChild(d);
+});
+</script>
+
+<h2>📘 <span id="ts-h"></span>ฟังก์ชันจัดการตัวแปรแต่ละชนิดใน TypeScript</h2>
+<p class="sub">กดหัวข้อเพื่อเปิดดูตาราง ฟังก์ชัน ตัวอย่าง และผลลัพธ์ แต่ละแถวเป็นอิสระต่อกัน (ไม่ต่อเนื่องจากแถวก่อนหน้า) บางฟังก์ชัน เช่น <code class="i">replaceAll</code>, <code class="i">at</code>, <code class="i">Promise.any</code> ต้องตั้ง <code class="i">target</code> หรือ <code class="i">lib</code> ใน tsconfig เป็น ES2022 ขึ้นไป (โปรเจกต์ NestJS รุ่นใหม่ตั้งไว้ให้แล้ว)</p>
+<div class="ts" id="tsref"></div>
+<script>
+const R=[
+['string','string (ข้อความ)','',`length§ความยาว§'Hello TS'.length§8
+toUpperCase / toLowerCase§เปลี่ยนตัวพิมพ์§'Hello TS'.toUpperCase()§'HELLO TS'
+slice§ตัดช่วง (รับค่าติดลบได้)§'Hello TS'.slice(0, 5)§'Hello'
+substring§ตัดช่วง (ไม่รับค่าติดลบ)§'Hello TS'.substring(6)§'TS'
+indexOf§ตำแหน่งแรก (ไม่พบ = -1)§'Hello TS'.indexOf('TS')§6
+includes§มีข้อความนี้ไหม§'Hello TS'.includes('lo')§true
+startsWith / endsWith§ขึ้นต้น / ลงท้ายด้วย§'Hello'.startsWith('He')§true
+split§แยกเป็น array§'a,b,c'.split(',')§[ 'a', 'b', 'c' ]
+trim§ตัดช่องว่างหัวท้าย§'  hi  '.trim()§'hi'
+replace / replaceAll§แทนที่ (replace เฉพาะตัวแรก)§'a-b-c'.replaceAll('-', '+')§'a+b+c'
+padStart / padEnd§เติมให้ครบความยาว§'7'.padStart(3, '0')§'007'
+repeat§ทำซ้ำ§'ab'.repeat(3)§'ababab'
+at / charAt§ตัวอักษรตำแหน่งที่ n (at รับค่าติดลบ)§'Hello'.at(-1)§'o'
+template literal§แทรกค่าในข้อความ§\`Hi \${1 + 1}\`§'Hi 2'
+localeCompare§เทียบ/เรียงตามภาษา§'ก'.localeCompare('ข')§ค่าลบ (ก มาก่อน ข)`],
+['number','number (ตัวเลข) และ Math','',`Number()§แปลงเป็นตัวเลข§Number('12')§12
+parseInt / parseFloat§แปลงจากข้อความ§parseInt('42px')§42
+toFixed§ทศนิยมคงที่ (คืนเป็น string)§(3.14159).toFixed(2)§'3.14'
+toString(radix)§แปลงฐานเลข§(10).toString(2)§'1010'
+toLocaleString§จัดรูปแบบตามภาษา§(1234567.891).toLocaleString('en-US')§'1,234,567.891'
+Number.isNaN§เช็คว่าเป็น NaN§Number.isNaN(Number('abc'))§true
+Number.isInteger§เช็คจำนวนเต็ม§Number.isInteger(5.5)§false
+Math.round§ปัดเศษใกล้สุด§Math.round(2.5)§3
+Math.floor / Math.ceil§ปัดลง / ปัดขึ้น§Math.floor(2.9)§2
+Math.trunc§ตัดทศนิยมทิ้ง§Math.trunc(-4.7)§-4
+Math.max / Math.min§ค่ามากสุด / น้อยสุด§Math.max(1, 5, 3)§5
+Math.abs§ค่าสัมบูรณ์§Math.abs(-4)§4
+** / Math.pow§ยกกำลัง§2 ** 3§8
+Math.sqrt§รากที่สอง§Math.sqrt(16)§4
+Math.random§สุ่มเลข 0 ถึงน้อยกว่า 1§Math.floor(Math.random() * 10)§จำนวนเต็มสุ่ม 0 ถึง 9`],
+['boolean','boolean (จริง/เท็จ)','ค่า falsy มี 7 ตัว: false, 0, -0, 0n, \'\', null, undefined และ NaN ที่เหลือเป็น truthy ทั้งหมด',`Boolean()§แปลงเป็น boolean§Boolean(0)§false
+Boolean()§array ว่างยังเป็น truthy§Boolean([])§true
+!!§แปลงแบบสั้น§!!'abc'§true
+! && ||§ตรรกะ NOT / AND / OR§true && !false§true
+toString§แปลงเป็นข้อความ§true.toString()§'true'`],
+['array','Array (อาร์เรย์)','ฟังก์ชันที่แก้ array เดิม: push pop shift unshift splice sort reverse fill ส่วนที่เหลือคืน array/ค่าใหม่',`push§เพิ่มท้าย คืนความยาวใหม่§const a = [1, 2]; a.push(3)§คืน 3 และ a = [ 1, 2, 3 ]
+pop§ลบตัวท้าย คืนตัวที่ลบ§const a = [1, 2, 3]; a.pop()§คืน 3 และ a = [ 1, 2 ]
+unshift§เพิ่มหน้า§const a = [2, 3]; a.unshift(1)§คืน 3 และ a = [ 1, 2, 3 ]
+shift§ลบตัวแรก คืนตัวที่ลบ§const a = [1, 2, 3]; a.shift()§คืน 1 และ a = [ 2, 3 ]
+splice§ลบ/แทรก/แทนที่ ตรงตำแหน่ง§const a = [1, 2, 3, 4]; a.splice(1, 2, 9)§คืน [ 2, 3 ] และ a = [ 1, 9, 4 ]
+slice§ตัดช่วงเป็น array ใหม่§[1, 2, 3, 4].slice(1, 3)§[ 2, 3 ]
+concat§ต่อ array§[1, 2].concat([3, 4])§[ 1, 2, 3, 4 ]
+spread (...)§กระจายสมาชิก§const a = [1, 2]; [...a, 3]§[ 1, 2, 3 ]
+indexOf§หาตำแหน่ง (ไม่พบ = -1)§[5, 6, 7].indexOf(6)§1
+includes§มีค่านี้ไหม§[1, 2, 3].includes(2)§true
+find§ตัวแรกที่ตรงเงื่อนไข§[1, 2, 3].find(x => x > 1)§2
+findIndex§ตำแหน่งของตัวแรกที่ตรง§[1, 2, 3].findIndex(x => x > 1)§1
+filter§กรองตามเงื่อนไข§[1, 2, 3, 4].filter(x => x % 2 === 0)§[ 2, 4 ]
+map§แปลงทุกตัว§[1, 2, 3].map(x => x * 2)§[ 2, 4, 6 ]
+reduce§รวมเป็นค่าเดียว§[1, 2, 3].reduce((s, x) => s + x, 0)§6
+forEach§วนลูป (ไม่คืนค่า)§[1, 2].forEach(x => console.log(x))§พิมพ์ 1 แล้ว 2
+some / every§มีบางตัว / ทุกตัวตรงเงื่อนไข§[1, 2, 3].some(x => x > 2)§true
+sort§เรียง (ตัวเลขต้องใส่ฟังก์ชันเทียบ)§[3, 1, 2].sort((a, b) => a - b)§[ 1, 2, 3 ]
+reverse§กลับลำดับ§[1, 2, 3].reverse()§[ 3, 2, 1 ]
+join§รวมเป็นข้อความ§['a', 'b'].join('-')§'a-b'
+flat§คลี่ array ซ้อน§[[1], [2, [3]]].flat()§[ 1, 2, [ 3 ] ]
+flatMap§map แล้ว flat 1 ชั้น§[1, 2].flatMap(x => [x, x * 2])§[ 1, 2, 2, 4 ]
+fill§เติมค่าซ้ำ§new Array(3).fill(0)§[ 0, 0, 0 ]
+Array.from§สร้างจากโครงอื่น§Array.from({ length: 3 }, (_, i) => i)§[ 0, 1, 2 ]
+Array.isArray§เช็คว่าเป็น array§Array.isArray([])§true
+at§ตำแหน่ง n (รับค่าติดลบ)§[1, 2, 3].at(-1)§3
+length§จำนวนสมาชิก§[1, 2, 3].length§3`],
+['tuple','Tuple (array กำหนดชนิดและจำนวนตายตัว)','Tuple ใช้เมธอดเดียวกับ array แต่ TypeScript จะเช็คชนิดตามตำแหน่ง',`ประกาศชนิด§กำหนดชนิดแต่ละตำแหน่ง§let t: [string, number] = ['age', 30]; t[0]§'age' (t[1] ได้ 30)
+destructuring§แตกค่าออกเป็นตัวแปร§const [k, v] = ['age', 30]§k = 'age', v = 30
+ตัวเลือก (?)§ตำแหน่งท้ายไม่ใส่ได้§const x: [string, number?] = ['a']§คอมไพล์ผ่าน
+named tuple§ตั้งชื่อช่วยอ่านง่าย§type P = [name: string, age: number]§ชนิดเดียวกับ [string, number]
+readonly§ห้ามแก้ค่า§const t: readonly [number, number] = [1, 2]; t[0] = 5§Error: Cannot assign to '0' because it is a read-only property
+ข้อควรระวัง§push ยังผ่านคอมไพล์ (ช่องโหว่ของ TS)§const t: [string, number] = ['a', 1]; t.push(2)§ผ่านคอมไพล์ และ t = [ 'a', 1, 2 ]`],
+['object','Object (ออบเจ็กต์) และ Utility Types','',`Object.keys§รายชื่อ key§Object.keys({ a: 1, b: 2 })§[ 'a', 'b' ]
+Object.values§รายการค่า§Object.values({ a: 1, b: 2 })§[ 1, 2 ]
+Object.entries§คู่ [key, value]§Object.entries({ a: 1, b: 2 })§[ [ 'a', 1 ], [ 'b', 2 ] ]
+Object.fromEntries§สร้าง object จากคู่§Object.fromEntries([['a', 1], ['b', 2]])§{ a: 1, b: 2 }
+Object.assign§รวมเข้า object เป้าหมาย§Object.assign({}, { a: 1 }, { b: 2 })§{ a: 1, b: 2 }
+spread (...)§คัดลอก/รวมแบบตื้น§const o = { a: 1, b: 2 }; { ...o, b: 3 }§{ a: 1, b: 3 }
+in / Object.hasOwn§มี key นี้ไหม§'a' in { a: 1 }§true
+delete§ลบ key (ต้องเป็น optional)§const o: { a?: number } = { a: 1 }; delete o.a; o§{}
+Object.freeze§ล็อกไม่ให้แก้§const o = Object.freeze({ a: 1 }); o.a = 2§TS Error: read-only property
+Optional chaining§เข้าถึงลึกโดยไม่ error§const o: { x?: { y: number } } = {}; o.x?.y§undefined
+destructuring§แตกค่า + เก็บส่วนที่เหลือ§const { a, ...rest } = { a: 1, b: 2, c: 3 }§a = 1, rest = { b: 2, c: 3 }
+Partial<T>§ทุก field เป็น optional§type U = { id: number; name: string }; Partial<U>§{ id?: number; name?: string }
+Required<T> / Readonly<T>§บังคับครบ / อ่านอย่างเดียว§Readonly<U>§{ readonly id: number; readonly name: string }
+Pick<T, K>§เลือกเฉพาะ field§Pick<U, 'id'>§{ id: number }
+Omit<T, K>§ตัด field ออก§Omit<U, 'id'>§{ name: string }
+Record<K, V>§object ที่ key/value มีชนิดเดียว§Record<string, number>§{ [x: string]: number }`],
+['map','Map (คู่ key-value ที่ key เป็นชนิดใดก็ได้)','สมมติทุกแถวเริ่มจาก const m = new Map([[\'a\', 1], [\'b\', 2]])',`new Map§สร้าง Map§new Map<string, number>([['a', 1]])§Map(1) { 'a' => 1 }
+set§เพิ่ม/แก้ค่า (คืน Map เดิม)§m.set('c', 3)§Map(3) { 'a' => 1, 'b' => 2, 'c' => 3 }
+get§อ่านค่า§m.get('a')§1 (ไม่มี key คืน undefined)
+has§มี key ไหม§m.has('b')§true
+delete§ลบ key§m.delete('a')§true
+size§จำนวนคู่§m.size§2
+keys§รายชื่อ key§[...m.keys()]§[ 'a', 'b' ]
+values§รายการค่า§[...m.values()]§[ 1, 2 ]
+entries§คู่ [key, value]§[...m.entries()]§[ [ 'a', 1 ], [ 'b', 2 ] ]
+forEach§วนทุกคู่§m.forEach((v, k) => console.log(k, v))§พิมพ์ a 1 แล้ว b 2
+clear§ล้างทั้งหมด§m.clear(); m.size§0
+Object.fromEntries§แปลงเป็น object§Object.fromEntries(m)§{ a: 1, b: 2 }`],
+['set','Set (ชุดค่าไม่ซ้ำ)','สมมติทุกแถวเริ่มจาก const s = new Set([1, 2, 2, 3])',`new Set§สร้าง Set (ตัดค่าซ้ำให้เอง)§new Set([1, 2, 2, 3])§Set(3) { 1, 2, 3 }
+add§เพิ่มค่า§s.add(4)§Set(4) { 1, 2, 3, 4 }
+has§มีค่านี้ไหม§s.has(2)§true
+delete§ลบค่า§s.delete(1)§true
+size§จำนวนสมาชิก§s.size§3
+forEach§วนทุกค่า§s.forEach(x => console.log(x))§พิมพ์ 1 2 3
+clear§ล้างทั้งหมด§s.clear(); s.size§0
+Set → array§แปลงเป็น array§[...s]§[ 1, 2, 3 ]
+ตัดค่าซ้ำใน array§เทคนิคยอดนิยม§[...new Set([1, 1, 2])]§[ 1, 2 ]
+ยูเนียน§รวมสองชุด§new Set([...s, ...new Set([3, 4])])§Set(4) { 1, 2, 3, 4 }
+อินเตอร์เซกชัน§เฉพาะที่อยู่ทั้งสองชุด§[...s].filter(x => new Set([2, 3, 9]).has(x))§[ 2, 3 ]`],
+['date','Date (วันและเวลา)','สมมติทุกแถวเริ่มจาก const d = new Date(\'2026-11-02T12:00:00Z\') ค่าที่ขึ้นกับโซนเวลาแสดงตามเวลาไทย (UTC+7)',`getFullYear§ปี ค.ศ.§d.getFullYear()§2026
+getMonth§เดือน (เริ่มที่ 0)§d.getMonth()§10 (คือพฤศจิกายน)
+getDate§วันที่ในเดือน§d.getDate()§2
+getDay§วันในสัปดาห์ (0 = อาทิตย์)§d.getDay()§1 (วันจันทร์)
+getHours§ชั่วโมง§d.getHours()§19
+toISOString§ข้อความมาตรฐาน ISO (UTC)§d.toISOString()§'2026-11-02T12:00:00.000Z'
+toLocaleDateString§แสดงตามภาษา§d.toLocaleDateString('th-TH', { dateStyle: 'long' })§'2 พฤศจิกายน 2569'
+Date.now§เวลาปัจจุบันเป็นมิลลิวินาที§Date.now()§ตัวเลขมิลลิวินาทีนับจาก 1 ม.ค. 1970
+setDate§เปลี่ยนวันที่ (แก้ d เดิม)§d.setDate(d.getDate() + 7); d.toISOString()§'2026-11-09T12:00:00.000Z'
+ลบวันที่§ได้ผลต่างเป็นมิลลิวินาที§new Date('2026-11-09') - new Date('2026-11-02')§604800000 (7 วัน)`],
+['enum','Enum (ชุดค่าคงที่ที่ตั้งชื่อ)','',`numeric enum§เลขเริ่มที่ 0 หรือกำหนดเอง§enum Dir { Up = 1, Down }; Dir.Down§2
+reverse mapping§ดึงชื่อจากเลข (เฉพาะ numeric)§Dir[1]§'Up'
+Object.keys§ของ numeric enum มีทั้งเลขและชื่อ§Object.keys(Dir)§[ '1', '2', 'Up', 'Down' ]
+string enum§ค่าเป็นข้อความ§enum Role { Admin = 'ADMIN', User = 'USER' }; Role.Admin§'ADMIN'
+Object.values§รายการค่าของ string enum§Object.values(Role)§[ 'ADMIN', 'USER' ]
+ใช้เป็นชนิด§จำกัดค่าที่ใส่ได้§let r: Role = Role.User§ผ่าน (ใส่ 'USER' ตรงๆ จะ Error)
+keyof typeof§ชนิดรวมชื่อ key§type K = keyof typeof Role§'Admin' | 'User'
+const enum§ถูกแทนค่าตอนคอมไพล์ ไม่มี object ตอนรัน§const enum E { A = 1 }; E.A§1
+ทางเลือก union§เบากว่า enum§type S = 'on' | 'off'§รับได้เฉพาะ 'on' หรือ 'off'`],
+['nullish','null และ undefined','',`?. §เข้าถึงโดยไม่ error ถ้าเป็น null/undefined§const u: { name: string } | undefined = undefined; u?.name§undefined
+?.[] / ?.()§ใช้กับ index และเรียกฟังก์ชัน§const arr: number[] | undefined = undefined; arr?.[0]§undefined
+??§ใช้ค่าสำรองเฉพาะ null/undefined§null ?? 'default'§'default'
+?? เทียบ ||§?? ไม่ถือ 0 และ '' ว่าว่าง§0 ?? 5  กับ  0 || 5§0  กับ  5
+??=§ใส่ค่าถ้ายังว่าง§let a: number | undefined; a ??= 10§a = 10
+! (non-null)§บอกคอมไพเลอร์ว่าไม่ใช่ null (ไม่เช็คตอนรัน)§document.getElementById('x')!.id§ชนิดเป็น HTMLElement ไม่ใช่ HTMLElement | null
+!= null§ตัด null และ undefined ออกจากชนิด§if (x != null) { x.toString() }§ใน if x ไม่เป็น null/undefined`],
+['promise','Promise และ async/await','',`async / await§รอผลลัพธ์แบบอ่านง่าย§const f = async () => 5; await f()§5
+new Promise§สร้าง Promise§new Promise<number>(res => setTimeout(() => res(1), 100))§resolve เป็น 1 หลัง 100ms
+then§ทำต่อเมื่อสำเร็จ§await Promise.resolve(1).then(x => x + 1)§2
+catch§ดักข้อผิดพลาด§await Promise.reject('err').catch(e => e)§'err'
+finally§ทำเสมอไม่ว่าสำเร็จหรือล้ม§Promise.resolve(1).finally(() => console.log('done'))§พิมพ์ done แล้ว resolve เป็น 1
+Promise.all§รอทุกตัว (ล้มทันทีถ้าตัวใดล้ม)§await Promise.all([Promise.resolve(1), Promise.resolve(2)])§[ 1, 2 ]
+Promise.allSettled§รอทุกตัวไม่ว่าสำเร็จหรือล้ม§await Promise.allSettled([Promise.resolve(1), Promise.reject('x')])§[ { status: 'fulfilled', value: 1 }, { status: 'rejected', reason: 'x' } ]
+Promise.race§ตัวที่เสร็จก่อนชนะ§await Promise.race([new Promise(r => setTimeout(r, 50, 'a')), new Promise(r => setTimeout(r, 10, 'b'))])§'b'
+Promise.any§ตัวแรกที่สำเร็จ§await Promise.any([Promise.reject('x'), Promise.resolve(2)])§2
+Awaited<T>§ชนิดหลัง await§type R = Awaited<Promise<number>>§number`],
+['json','JSON','',`JSON.stringify§object เป็นข้อความ§JSON.stringify({ a: 1, b: [2] })§'{"a":1,"b":[2]}'
+stringify + เยื้อง§จัดรูปแบบอ่านง่าย§JSON.stringify({ a: 1 }, null, 2)§'{\\n  "a": 1\\n}'
+JSON.parse§ข้อความเป็น object§JSON.parse('{"a":1}')§{ a: 1 }
+parse + ระบุชนิด§ให้ TS รู้ชนิด (ไม่ได้ตรวจจริงตอนรัน)§JSON.parse('{"a":1}') as { a: number }§{ a: 1 } ชนิด { a: number }
+structuredClone§คัดลอกลึก§const o = { a: [1] }; const c = structuredClone(o); c.a.push(2); o.a§[ 1 ] (ต้นฉบับไม่เปลี่ยน)`],
+['regexp','RegExp (นิพจน์ปกติ)','',`test§ตรงรูปแบบไหม§/\\d+/.test('a12')§true
+exec§ผลจับคู่ + กลุ่ม§/(\\d+)-(\\d+)/.exec('10-20')§[ '10-20', '10', '20' ] (มี index, input เพิ่ม)
+string.match§หาทั้งหมดด้วย flag g§'a1b22'.match(/\\d+/g)§[ '1', '22' ]
+matchAll§วนทุกผลจับคู่§[...'a1b22'.matchAll(/\\d+/g)].map(m => m[0])§[ '1', '22' ]
+string.replace§แทนที่ตามรูปแบบ§'a1b2'.replace(/\\d/g, '#')§'a#b#'`],
+['guards','Type guard และชนิดพิเศษ','ชนิดพวกนี้ทำงานตอนคอมไพล์ ผลลัพธ์ในตารางคือชนิดที่ TypeScript ตีความ',`typeof§แคบชนิดแบบ primitive§if (typeof x === 'string') { x }§ใน if ชนิดของ x คือ string
+instanceof§แคบชนิดตาม class§if (e instanceof Error) { e.message }§ใช้ .message ได้
+in§แคบชนิดตามมี property§if ('name' in obj) { obj.name }§ชนิดที่มี name
+Array.isArray§แคบชนิดเป็น array§if (Array.isArray(x)) { x.length }§x เป็น any[] หรือ array ตามชนิดเดิม
+unknown§รับค่าอะไรก็ได้ แต่ต้องเช็คก่อนใช้§let v: unknown = 'hi'; if (typeof v === 'string') v.length§2 (ถ้าไม่เช็ค จะ Error)
+any§ปิดการเช็คชนิด (หลีกเลี่ยง)§let v: any = 1; v.foo()§คอมไพล์ผ่าน แต่พังตอนรัน
+never§ฟังก์ชันที่ไม่มีวันคืนค่า§function fail(m: string): never { throw new Error(m) }§ไม่คืนค่าเลย
+void§ฟังก์ชันไม่คืนค่า§function log(): void { console.log('hi') }§คืน undefined
+as const§ล็อกเป็นค่าตายตัว§const c = ['a', 'b'] as const§readonly [ 'a', 'b' ]
+satisfies§เช็คโครงโดยคงชนิดเดิมไว้§const p = { x: 1 } satisfies Record<string, number>§p.x ยังเป็นชนิด number
+generics§ชนิดที่รับพารามิเตอร์§function first<T>(a: T[]): T { return a[0] }; first([1, 2])§1 (T = number)`],
+['bigint','bigint และ symbol','bigint ต้องตั้ง target เป็น ES2020 ขึ้นไป',`bigint§จำนวนเต็มขนาดใหญ่§2n ** 64n§18446744073709551616n
+bigint บวกกัน§ห้ามผสมกับ number§10n + 5n§15n
+typeof§เช็คชนิด§typeof 1n§'bigint'
+Symbol§ค่าที่ไม่ซ้ำกันเลย§Symbol('a') === Symbol('a')§false
+Symbol.for§สร้าง/ดึงจากทะเบียนกลาง§Symbol.for('a') === Symbol.for('a')§true
+description§อ่านคำอธิบาย§Symbol('id').description§'id'`]
+];
+const box=document.getElementById('tsref');
+R.forEach(([id,title,note,rows])=>{
+ const d=document.createElement('details');d.id='t-'+id;if(id==='array')d.open=true;
+ const s=document.createElement('summary');s.textContent=title;d.appendChild(s);
+ if(note){const p=document.createElement('p');p.className='note';p.textContent=note;d.appendChild(p);}
+ const w=document.createElement('div');w.className='scroll';const t=document.createElement('table');
+ t.innerHTML='<thead><tr><th>ฟังก์ชัน</th><th>ตัวอย่าง</th><th>ผลลัพธ์</th></tr></thead><tbody></tbody>';
+ rows.trim().split('\n').forEach(l=>{const [f,ds,c,o]=l.split('§');const tr=t.tBodies[0].insertRow();
+  const a=tr.insertCell();a.innerHTML='<b></b><br><small></small>';a.firstChild.textContent=f;a.lastChild.textContent=ds;
+  tr.insertCell().textContent=c;tr.insertCell().textContent=o;});
+ w.appendChild(t);d.appendChild(w);box.appendChild(d);
+});
+</script>
+
+<h2 id="th-links">🇹🇭 เว็บภาษาไทยเรื่อง NestJS CRUD</h2>
+<p class="sub">พบ 9 ลิงก์ (บทความไทยมีน้อย) หลายชิ้นเก่า 2–5 ปี คำสั่งบางอย่างอาจเปลี่ยนไปแล้ว ให้เทียบกับ docs.nestjs.com</p>
+<div class="cat">ตรงเรื่อง CRUD</div>
+<div class="grid">
+<a class="lk" href="https://medium.com/@slil.puangpoom/%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87-restful-apis-%E0%B8%94%E0%B9%89%E0%B8%A7%E0%B8%A2-nestjs-%E0%B8%95%E0%B8%AD%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88-4-993003db84f4" target="_blank" rel="noopener"><b>1. สร้าง RESTful APIs ด้วย NestJS ตอนที่ 4</b><small>Medium: ทำ CRUD กับฐานข้อมูลด้วย TypeORM แยกตามความสัมพันธ์ของตาราง พร้อมเตือนจุดที่ error บ่อย (เป็นตอนที่ 4 ของชุด)</small><small class="u">medium.com/@slil.puangpoom</small></a>
+<a class="lk" href="https://medium.com/@erika.snp/%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2-crud-role-based-authentication-%E0%B8%94%E0%B9%89%E0%B8%A7%E0%B8%A2-nestjs-%E0%B8%95%E0%B8%AD%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88-1-create-read-update-delete-e1be023910ae" target="_blank" rel="noopener"><b>2. พัฒนา CRUD + Role-based Authentication ตอนที่ 1</b><small>Medium: สอน Create/Read/Update/Delete ของ user อธิบาย DTO และการกำหนด path ใกล้เคียงโจทย์ของเรามากที่สุด</small><small class="u">medium.com/@erika.snp</small></a>
+<a class="lk" href="https://meesiri.com/blog/it-system-software-development-4/sraang-restful-api-dwy-nestjs-aela-mongodb-2104" target="_blank" rel="noopener"><b>3. สร้าง RESTful API ด้วย NestJS และ MongoDB</b><small>meesiri.com: บล็อกบริษัท เนื้อหาเชิงภาพรวม ตั้งแต่ติดตั้ง NestJS CLI ถึงต่อ MongoDB</small><small class="u">meesiri.com/blog/…/sraang-restful-api-dwy-nestjs-aela-mongodb-2104</small></a>
+<a class="lk" href="https://www.youtube.com/watch?v=zY2dU54X08E" target="_blank" rel="noopener"><b>4. พื้นฐาน NestJS ทำ API CRUD ข้อมูล MySQL</b><small>YouTube: วิดีโอ live code เหมาะกับคนชอบดูมากกว่าอ่าน (ลงมาประมาณ 4–5 ปีแล้ว)</small><small class="u">youtube.com/watch?v=zY2dU54X08E</small></a>
+<a class="lk" href="https://www.skilllane.com/courses/RESTful-API-NestJS-TypeORM-GraphQL-MySQL" target="_blank" rel="noopener"><b>5. คอร์ส RESTful API NestJS + TypeORM + GraphQL + MySQL</b><small>SkillLane: คอร์สออนไลน์ภาษาไทย สอน REST API, TypeORM และล็อกอินด้วย JWT (ยังไม่ทราบว่าต้องเสียเงินหรือไม่)</small><small class="u">skilllane.com/courses/RESTful-API-NestJS-TypeORM-GraphQL-MySQL</small></a>
+</div>
+<div class="cat">เกี่ยวข้อง แต่ไม่ใช่ CRUD ตรงๆ</div>
+<div class="grid">
+<a class="lk" href="https://github.com/nut2567/Learning_Management_System_PostgreSql" target="_blank" rel="noopener"><b>6. Learning Management System (Prisma + PostgreSQL + Docker)</b><small>GitHub: โปรเจกต์ตัวอย่างพร้อม README ภาษาไทย เหมาะดูโครงสร้างงานจริง (ผู้เขียนบอกว่ายังไม่มี validation ละเอียด)</small><small class="u">github.com/nut2567/Learning_Management_System_PostgreSql</small></a>
+<a class="lk" href="https://www.meesiri.com/blog/it-system-software-development-4/sraang-api-dwy-nestjs-graphql-chbabnakphathnaaaithy-1989" target="_blank" rel="noopener"><b>7. สร้าง API ด้วย NestJS GraphQL ฉบับนักพัฒนาไทย</b><small>meesiri.com: ทำ API ด้วย GraphQL แทน REST</small><small class="u">meesiri.com/blog/…/sraang-api-dwy-nestjs-graphql-…-1989</small></a>
+<a class="lk" href="https://meesiri.com/blog/tag/node-js-814" target="_blank" rel="noopener"><b>8. รวมบทความ Node.js ของ meesiri.com</b><small>หน้ารวมบทความ มี “คู่มือสร้าง RESTful API ด้วย NestJS ฉบับนักพัฒนาไทย” ต้องกดเลือกจากหน้านี้</small><small class="u">meesiri.com/blog/tag/node-js-814</small></a>
+</div>
+<div class="cat">เรื่อง Swagger</div>
+<div class="grid">
+<a class="lk" href="https://medium.com/mintelligence/openapi-4824dba1ab86" target="_blank" rel="noopener"><b>9. Mintelligence: NestJS OpenApi (Swagger)</b><small>Medium: เรื่อง Swagger (เก่า ใช้ชื่อ ApiModelProperty ปัจจุบันใช้ ApiProperty)</small><small class="u">medium.com/mintelligence/openapi-4824dba1ab86</small></a>
+</div>
+
+<h2 id="en-links">🇬🇧 เว็บภาษาอังกฤษเรื่อง NestJS CRUD</h2>
+<div id="links"></div>
+</main>
+
+<script>
+const L=[
+["เริ่มต้นและเครื่องมือ","First steps","https://docs.nestjs.com/first-steps","เอกสารทางการ สร้างโปรเจกต์แรกและเข้าใจโครงสร้างพื้นฐาน"],
+["เริ่มต้นและเครื่องมือ","Nest CLI","https://docs.nestjs.com/cli/overview","คำสั่ง nest ทั้งหมด เช่น new, generate, build"],
+["เริ่มต้นและเครื่องมือ","CRUD generator","https://docs.nestjs.com/recipes/crud-generator","อธิบายคำสั่ง nest g resource ที่สร้าง CRUD ให้อัตโนมัติ"],
+["เริ่มต้นและเครื่องมือ","Sample ทางการ","https://github.com/nestjs/nest/tree/master/sample","โปรเจกต์ตัวอย่างหลายแบบของทีม Nest ให้เปิดอ่านโค้ดจริง"],
+["เริ่มต้นและเครื่องมือ","typescript-starter","https://github.com/nestjs/typescript-starter","เทมเพลตเริ่มต้นที่ nest new ใช้อยู่เบื้องหลัง"],
+["แนวคิดหลัก","Controllers","https://docs.nestjs.com/controllers","กำหนด route และ HTTP method เช่น @Get @Post @Put @Delete"],
+["แนวคิดหลัก","Providers (Service)","https://docs.nestjs.com/providers","เขียนตรรกะใน service และ dependency injection"],
+["แนวคิดหลัก","Modules","https://docs.nestjs.com/modules","จัดกลุ่ม controller กับ service เป็นโมดูล"],
+["แนวคิดหลัก","Pipes","https://docs.nestjs.com/pipes","แปลงและตรวจข้อมูล เช่น ParseIntPipe สำหรับ :id"],
+["แนวคิดหลัก","Validation","https://docs.nestjs.com/techniques/validation","ใช้ class-validator กับ DTO และคืน 400 เมื่อข้อมูลผิด"],
+["แนวคิดหลัก","Exception filters","https://docs.nestjs.com/exception-filters","จัดการ error เช่น NotFoundException ที่ให้ 404"],
+["ฐานข้อมูล (หลังจากหมดช่วงจำลอง)","Database (TypeORM)","https://docs.nestjs.com/techniques/database","ต่อ SQL ด้วย TypeORM หรือ Sequelize ทำ CRUD กับตารางจริง"],
+["ฐานข้อมูล (หลังจากหมดช่วงจำลอง)","MongoDB","https://docs.nestjs.com/techniques/mongodb","ใช้ Mongoose ทำ CRUD กับ MongoDB"],
+["ฐานข้อมูล (หลังจากหมดช่วงจำลอง)","Prisma","https://docs.nestjs.com/recipes/prisma","ใช้ Prisma ORM กับ NestJS แบบทีละขั้น"],
+["ฐานข้อมูล (หลังจากหมดช่วงจำลอง)","บทความ TypeORM + PostgreSQL","https://jae-study.tistory.com/79","บล็อกภาษาเกาหลีสอน nest g resource แล้วต่อยอดเป็น CRUD (ใช้แปลเบราว์เซอร์ช่วยได้)"],
+["เอกสาร ทดสอบ และต่อยอด","Swagger (OpenAPI)","https://docs.nestjs.com/openapi/introduction","สร้างหน้าเอกสารและทดลองยิง API จากเบราว์เซอร์"],
+["เอกสาร ทดสอบ และต่อยอด","Testing","https://docs.nestjs.com/fundamentals/testing","เขียน unit test และ e2e test ให้ endpoint"],
+["เอกสาร ทดสอบ และต่อยอด","GraphQL","https://docs.nestjs.com/graphql/quick-start","ทำ CRUD ด้วย query และ mutation แทน REST"],
+["เครื่องมือเสริมจากชุมชน","nestjs-gen (npm)","https://www.npmjs.com/package/nestjs-gen","ตัวสร้างไฟล์ module/controller/service พร้อม --crud (ต้องใช้ TypeORM)"],
+["เครื่องมือเสริมจากชุมชน","NestJS CRUD Automator","https://elsikora.com/docs/nestjs-crud-automator","ไลบรารีสร้าง controller, DTO, service แบบ declarative พร้อม filter และ pagination"],
+["เครื่องมือเสริมจากชุมชน","Nest บน GitHub","https://github.com/nestjs/nest","ซอร์สโค้ดของ framework ดู issue และตัวอย่างได้"],
+["เรื่อง Swagger","NestJS Docs: OpenAPI (Swagger)","https://docs.nestjs.com/openapi/introduction","เอกสารทางการ ครบที่สุด (ผมยังไม่ได้เปิดตรวจหน้านี้โดยตรง)"],
+["เรื่อง Swagger","NestJS Docs v9: Swagger","https://docs.nestjs.com/v9/recipes/swagger","เอกสารทางการรุ่น 9 อธิบาย DocumentBuilder, createDocument และ setup"],
+["เรื่อง Swagger","DEV: API Documentation for NestJS","https://dev.to/dilumdarshana/api-documentation-for-nestjs-3cnk","สั้นๆ เข้าใจง่าย ครอบคลุมการติดตั้ง @ApiTags และ @ApiProperty ใน DTO"],
+["เรื่อง Swagger","DEV: 5 tips for better Swagger docs","https://dev.to/antoncodes/5-tips-for-better-swagger-docs-in-nestjs-ng9","เคล็ดลับทำเอกสารให้ดีขึ้น เช่น ใส่ response code ให้ครบทุกกรณี"],
+["เรื่อง Swagger","codeburst: Integrating Swagger with NestJS","https://codeburst.io/integrating-swagger-with-nestjs-9650594ab728","อธิบาย @ApiOkResponse, @ApiNotFoundResponse และ CLI plugin (อาจเป็น member-only)"],
+["เรื่อง Swagger","Medium: Document Your NestJS APIs with Swagger","https://medium.com/@metesayan/how-to-document-your-nestjs-apis-with-swagger-42bdefd13698","สร้างโปรเจกต์ด้วย nest generate resource แล้วต่อ Swagger พร้อมโปรเจกต์ตัวอย่างบน GitHub"],
+["เรื่อง Swagger","Educative: Integrate Swagger into the App","https://educative.io/courses/building-secure-restful-apis-with-nestjs-a-practical-guide/integrate-swagger-into-the-app","บทเรียนตั้งค่า Swagger และทดสอบ CRUD ผ่านหน้าเอกสาร"]
+];
+const linksBox=document.getElementById('links');let cur='',g;
+L.forEach(([c,t,u,d],i)=>{
+ if(c!==cur){cur=c;const h=document.createElement('div');h.className='cat';h.textContent=c;linksBox.appendChild(h);g=document.createElement('div');g.className='grid';linksBox.appendChild(g);}
+ const a=document.createElement('a');a.className='lk';a.href=u;a.target='_blank';a.rel='noopener';
+ a.innerHTML='<b>'+(i+1)+'. '+t+'</b><small>'+d+'</small><small class="u">'+u.replace('https://','')+'</small>';g.appendChild(a);
+});
+document.querySelectorAll('.cb').forEach(b=>{
+ const btn=document.createElement('button');btn.className='cp';btn.textContent='คัดลอก';
+ btn.onclick=()=>{try{navigator.clipboard.writeText(b.querySelector('pre').innerText);btn.textContent='แล้ว';setTimeout(()=>btn.textContent='คัดลอก',1200);}catch(e){}};
+ b.appendChild(btn);
+});
+const navMenu=document.querySelector('.nav-menu');
+navMenu.querySelectorAll('.nav-dropdown a').forEach(link=>{
+ link.addEventListener('click',()=>{navMenu.open=false;});
+});
+document.addEventListener('click',event=>{
+ if(!navMenu.contains(event.target)) navMenu.open=false;
+});
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&navMenu.open){navMenu.open=false;navMenu.querySelector('summary').focus();}
+});
+</script>
+</body>
+</html>
